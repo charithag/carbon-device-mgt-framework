@@ -29,7 +29,6 @@ public class Group implements Serializable {
     private Long dateOfCreation;
     private Long dateOfLastUpdate;
     private String ownerId;
-    private String ownerShip;
     private int tenantId;
 
     public int getId() {
@@ -78,14 +77,6 @@ public class Group implements Serializable {
 
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
-    }
-
-    public String getOwnerShip() {
-        return ownerShip;
-    }
-
-    public void setOwnerShip(String ownerShip) {
-        this.ownerShip = ownerShip;
     }
 
     public int getTenantId() {

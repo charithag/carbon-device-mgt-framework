@@ -52,16 +52,15 @@ public class GroupDAOImpl implements GroupDAO {
             conn = this.getConnection();
             String sql =
                     "INSERT INTO DM_GROUP(DESCRIPTION, NAME, DATE_OF_ENROLLMENT, DATE_OF_LAST_UPDATE, " +
-                            "OWNERSHIP, OWNER, TENANT_ID) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                            "OWNER, TENANT_ID) " +
+                            "VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, group.getDescription());
             stmt.setString(2, group.getName());
             stmt.setLong(3, new Date().getTime());
             stmt.setLong(4, new Date().getTime());
-            stmt.setString(5, group.getOwnerShip());
-            stmt.setString(6, group.getOwnerId());
-            stmt.setInt(7, group.getTenantId());
+            stmt.setString(5, group.getOwnerId());
+            stmt.setInt(6, group.getTenantId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             String msg = "Error occurred while adding group " +
@@ -97,7 +96,7 @@ public class GroupDAOImpl implements GroupDAO {
         try {
             conn = this.getConnection();
             String selectDBQueryForType = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, " +
-                    "DATE_OF_LAST_UPDATE, OWNERSHIP, OWNER, TENANT_ID FROM DM_GROUP ";
+                    "DATE_OF_LAST_UPDATE, OWNER, TENANT_ID FROM DM_GROUP ";
             stmt = conn.prepareStatement(selectDBQueryForType);
             resultSet = stmt.executeQuery();
             groupList = new ArrayList<Group>();
@@ -108,10 +107,8 @@ public class GroupDAOImpl implements GroupDAO {
                 group.setName(resultSet.getString(3));
                 group.setDateOfCreation(resultSet.getLong(4));
                 group.setDateOfLastUpdate(resultSet.getLong(5));
-                //TODO:- Ownership is not a enum in DeviceDAO
-                group.setOwnerShip(resultSet.getString(6));
-                group.setOwnerId(resultSet.getString(7));
-                group.setTenantId(resultSet.getInt(8));
+                group.setOwnerId(resultSet.getString(6));
+                group.setTenantId(resultSet.getInt(7));
                 groupList.add(group);
             }
         } catch (SQLException e) {
@@ -133,7 +130,7 @@ public class GroupDAOImpl implements GroupDAO {
         try {
             conn = this.getConnection();
             String selectDBQueryForUser = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, " +
-                    "DATE_OF_LAST_UPDATE, OWNERSHIP, OWNER, TENANT_ID FROM DM_GROUP WHERE OWNER = ? AND TENANT_ID = ?";
+                    "DATE_OF_LAST_UPDATE, OWNER, TENANT_ID FROM DM_GROUP WHERE OWNER = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(selectDBQueryForUser);
             stmt.setString(1, username);
             stmt.setInt(2, tenantId);
@@ -146,10 +143,8 @@ public class GroupDAOImpl implements GroupDAO {
                 group.setName(resultSet.getString(3));
                 group.setDateOfCreation(resultSet.getLong(4));
                 group.setDateOfLastUpdate(resultSet.getLong(5));
-                //TODO:- Ownership is not a enum in DeviceDAO
-                group.setOwnerShip(resultSet.getString(6));
-                group.setOwnerId(resultSet.getString(7));
-                group.setTenantId(resultSet.getInt(8));
+                group.setOwnerId(resultSet.getString(6));
+                group.setTenantId(resultSet.getInt(7));
                 groupList.add(group);
             }
         } catch (SQLException e) {

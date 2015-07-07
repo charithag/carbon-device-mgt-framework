@@ -20,7 +20,6 @@ package org.wso2.carbon.policy.mgt.core.mgt.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
@@ -41,13 +40,11 @@ public class ProfileManagerImpl implements ProfileManager {
     private static Log log = LogFactory.getLog(ProfileManagerImpl.class);
     private ProfileDAO profileDAO;
     private FeatureDAO featureDAO;
-    private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
 
     public ProfileManagerImpl() {
         profileDAO = PolicyManagementDAOFactory.getProfileDAO();
         featureDAO = PolicyManagementDAOFactory.getFeatureDAO();
-        deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
         deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 

@@ -65,10 +65,8 @@ public class PolicyDAOTestCase {
     private static final Log log = LogFactory.getLog(PolicyDAOTestCase.class);
     private static DataSource dataSource;
     private List<Feature> featureList;
-    private List<ProfileFeature> profileFeatureList;
     private Profile profile;
     private Policy policy;
-    private List<Device> devices;
 
     @BeforeClass
     @Parameters("dbType")
@@ -179,7 +177,6 @@ public class PolicyDAOTestCase {
         group.setDateOfCreation(new Date().getTime());
         group.setDateOfLastUpdate(new Date().getTime());
         group.setDescription("test group description");
-        group.setOwnerShip(OwnerShip.BYOD.toString());
         group.setOwnerId("111");
         group.setTenantId(-1234);
         groupMgtDAO.addGroup(group);
@@ -198,7 +195,7 @@ public class PolicyDAOTestCase {
     public void addDevice() throws DeviceManagementDAOException, GroupManagementDAOException {
 
         DeviceDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        devices = DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType());
+        List<Device> devices = DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType());
         for (Device device : devices) {
             device.setGroupId(getGroupId());
             deviceTypeDAO.addDevice(device);
@@ -224,7 +221,6 @@ public class PolicyDAOTestCase {
         ProfileManager profileManager = new ProfileManagerImpl();
         profile = ProfileCreator.getProfile(featureList);
         profileManager.addProfile(profile);
-        profileFeatureList = profile.getProfileFeaturesList();
     }
 
     @Test(dependsOnMethods = ("addProfileFeatures"))

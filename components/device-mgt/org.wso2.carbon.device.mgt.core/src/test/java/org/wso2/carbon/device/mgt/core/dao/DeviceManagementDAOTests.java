@@ -156,7 +156,6 @@ public class DeviceManagementDAOTests {
         group.setDateOfCreation(new Date().getTime());
         group.setDateOfLastUpdate(new Date().getTime());
         group.setDescription("test group description");
-        group.setOwnerShip(OwnerShip.BYOD.toString());
         group.setOwnerId("111");
         group.setTenantId(-1234);
         groupMgtDAO.addGroup(group);
