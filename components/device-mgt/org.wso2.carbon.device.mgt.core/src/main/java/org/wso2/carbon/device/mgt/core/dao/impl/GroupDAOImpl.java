@@ -62,6 +62,7 @@ public class GroupDAOImpl implements GroupDAO {
             stmt.setString(5, group.getOwnerId());
             stmt.setInt(6, group.getTenantId());
             stmt.executeUpdate();
+            conn.commit();
         } catch (SQLException e) {
             String msg = "Error occurred while adding group " +
                     "'" + group.getName() + "'";
@@ -74,21 +75,88 @@ public class GroupDAOImpl implements GroupDAO {
 
     @Override
     public void updateGroup(Group group) throws GroupManagementDAOException {
-
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String sql =
+                    "UPDATE DM_GROUP SET DESCRIPTION = ?, NAME = ?, DATE_OF_LAST_UPDATE = ?, " +
+                            "OWNER = ? WHERE ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, group.getDescription());
+            stmt.setString(2, group.getName());
+            stmt.setLong(3, group.getDateOfLastUpdate());
+            stmt.setString(4, group.getOwnerId());
+            stmt.setInt(5, group.getId());
+            stmt.executeUpdate();
+            conn.commit();
+        } catch (SQLException e) {
+            String msg = "Error occurred while updating group " +
+                    "'" + group.getName() + "'";
+            log.error(msg, e);
+            throw new GroupManagementDAOException(msg, e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(conn, stmt, null);
+        }
     }
 
     @Override
     public void deleteGroup(int groupId) throws GroupManagementDAOException {
-
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String sql =
+                    "DELETE FROM DM_GROUP WHERE ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, groupId);
+            stmt.executeUpdate();
+            conn.commit();
+        } catch (SQLException e) {
+            String msg = "Error occurred while deleting group " +
+                    "'" + groupId + "'";
+            log.error(msg, e);
+            throw new GroupManagementDAOException(msg, e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(conn, stmt, null);
+        }
     }
 
     @Override
-    public Group getGroup(int groupId) throws GroupManagementDAOException {
-        return null;
+    public Group getGroupById(int groupId) throws GroupManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        Group group = null;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, " +
+                    "DATE_OF_LAST_UPDATE, OWNER, TENANT_ID FROM DM_GROUP WHERE ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, groupId);
+            resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                group = new Group();
+                group.setId(resultSet.getInt(1));
+                group.setDescription(resultSet.getString(2));
+                group.setName(resultSet.getString(3));
+                group.setDateOfCreation(resultSet.getLong(4));
+                group.setDateOfLastUpdate(resultSet.getLong(5));
+                group.setOwnerId(resultSet.getString(6));
+                group.setTenantId(resultSet.getInt(7));
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred while listing all groups";
+            log.error(msg, e);
+            throw new GroupManagementDAOException(msg, e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
+        }
+        return group;
     }
 
     @Override
-    public List<Group> getGroups() throws GroupManagementDAOException {
+    public List<Group> getAllGroups() throws GroupManagementDAOException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -122,16 +190,16 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<Group> getGroupListOfUser(String username, int tenantId) throws GroupManagementDAOException {
+    public List<Group> getGroupsOfUser(String username, int tenantId) throws GroupManagementDAOException {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
         List<Group> groupList = null;
         try {
             conn = this.getConnection();
-            String selectDBQueryForUser = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, " +
+            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, " +
                     "DATE_OF_LAST_UPDATE, OWNER, TENANT_ID FROM DM_GROUP WHERE OWNER = ? AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(selectDBQueryForUser);
+            stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
             stmt.setInt(2, tenantId);
             resultSet = stmt.executeQuery();
@@ -158,13 +226,62 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public int getGroupCount() throws GroupManagementDAOException {
-        return 0;
+    public int getGroupCountOfUser(String username, int tenantId) throws GroupManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        int count = 0;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT COUNT(ID) AS GROUP_COUNT FROM DM_GROUP WHERE OWNER = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            stmt.setInt(2, tenantId);
+            resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred while listing all groups";
+            log.error(msg, e);
+            throw new GroupManagementDAOException(msg, e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
+        }
+        return count;
     }
 
     @Override
-    public List<Group> getGroupsByName(String groupName, int tenantId) throws GroupManagementDAOException {
-        return null;
+    public Group getGroupByName(String groupName, int tenantId) throws GroupManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        Group group = null;
+        try {
+            conn = this.getConnection();
+            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, " +
+                    "DATE_OF_LAST_UPDATE, OWNER, TENANT_ID FROM DM_GROUP WHERE NAME = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, groupName);
+            stmt.setInt(2, tenantId);
+            resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                group = new Group();
+                group.setId(resultSet.getInt(1));
+                group.setDescription(resultSet.getString(2));
+                group.setName(resultSet.getString(3));
+                group.setDateOfCreation(resultSet.getLong(4));
+                group.setDateOfLastUpdate(resultSet.getLong(5));
+                group.setOwnerId(resultSet.getString(6));
+                group.setTenantId(resultSet.getInt(7));
+            }
+        } catch (SQLException e) {
+            String msg = "Error occurred while listing all groups";
+            log.error(msg, e);
+            throw new GroupManagementDAOException(msg, e);
+        } finally {
+            GroupManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
+        }
+        return group;
     }
 
     private Connection getConnection() throws GroupManagementDAOException {

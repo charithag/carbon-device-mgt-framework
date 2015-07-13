@@ -58,33 +58,43 @@ public interface GroupDAO {
      * @return Group
      * @throws GroupManagementDAOException
      */
-    Group getGroup(int groupId) throws GroupManagementDAOException;
-
-    List<Group> getGroups() throws GroupManagementDAOException;
+    Group getGroupById(int groupId) throws GroupManagementDAOException;
 
     /**
      * Get the list of Groups belongs to a user.
      *
-     * @param username Requested user.
+     * @return List of all Groups.
+     * @throws GroupManagementDAOException
+     */
+    List<Group> getAllGroups() throws GroupManagementDAOException;
+
+    /**
+     * Get the list of Groups belongs to a user.
+     *
+     * @param username of the user.
+     * @param tenantId of user's tenant
      * @return List of Groups of the user.
      * @throws GroupManagementDAOException
      */
-    List<Group> getGroupListOfUser(String username, int tenantId) throws GroupManagementDAOException;
+    List<Group> getGroupsOfUser(String username, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get the count of Group
      *
+     * @param username of the user.
+     * @param tenantId of user's tenant
      * @return Group count
      * @throws GroupManagementDAOException
      */
-    int getGroupCount() throws GroupManagementDAOException;
+    int getGroupCountOfUser(String username, int tenantId) throws GroupManagementDAOException;
 
     /**
      * Get the list of Groups that matches with the given Group name.
      *
-     * @param groupName Name of the Group
+     * @param groupName of the group.
+     * @param tenantId of user's tenant
      * @return List of Groups that matches with the given Group name.
      * @throws GroupManagementDAOException
      */
-    List<Group> getGroupsByName(String groupName, int tenantId) throws GroupManagementDAOException;
+    Group getGroupByName(String groupName, int tenantId) throws GroupManagementDAOException;
 }

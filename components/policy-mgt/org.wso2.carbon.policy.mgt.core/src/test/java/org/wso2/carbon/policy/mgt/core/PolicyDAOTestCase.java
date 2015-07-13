@@ -31,7 +31,6 @@ import org.wso2.carbon.device.mgt.common.Group;
 import org.wso2.carbon.device.mgt.common.GroupManagementException;
 import org.wso2.carbon.device.mgt.core.dao.*;
 import org.wso2.carbon.device.mgt.core.dto.Device;
-import org.wso2.carbon.device.mgt.core.dto.OwnerShip;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.common.DBTypes;
 import org.wso2.carbon.policy.mgt.core.common.TestDBConfiguration;
@@ -184,7 +183,7 @@ public class PolicyDAOTestCase {
 
     private int getGroupId() throws GroupManagementDAOException {
         GroupDAO groupMgtDAO = DeviceManagementDAOFactory.getGroupDAO();
-        List<Group> groupList = groupMgtDAO.getGroups();
+        List<Group> groupList = groupMgtDAO.getAllGroups();
         if (!groupList.isEmpty()) {
             return groupList.get(0).getId();
         }

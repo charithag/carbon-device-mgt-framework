@@ -74,6 +74,7 @@ public class DeviceDAOImpl implements DeviceDAO {
                 stmt.setNull(11, java.sql.Types.INTEGER);
             }
             stmt.executeUpdate();
+            conn.commit();
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while enrolling device " +
                     "'" + device.getName() + "'", e);
@@ -94,6 +95,24 @@ public class DeviceDAOImpl implements DeviceDAO {
 
     @Override
     public void deleteDevice(int deviceId) throws DeviceManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = this.getConnection();
+            String sql =
+                    "DELETE FROM DM_DEVICE WHERE ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, deviceId);
+            stmt.executeUpdate();
+            conn.commit();
+        } catch (SQLException e) {
+            String msg = "Error occurred while deleting device " +
+                    "'" + deviceId + "'";
+            log.error(msg, e);
+            throw new DeviceManagementDAOException(msg, e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(conn, stmt, null);
+        }
 
     }
 

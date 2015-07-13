@@ -311,7 +311,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public List<Group> getAllGroups() throws GroupManagementException {
         try {
-            return this.groupDAO.getGroups();
+            return this.groupDAO.getAllGroups();
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining groups", e);
         }
@@ -320,7 +320,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public Group getGroup(int groupId) throws GroupManagementException {
         try {
-            return this.groupDAO.getGroup(groupId);
+            return this.groupDAO.getGroupById(groupId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group " + groupId, e);
         }
@@ -330,7 +330,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     public List<Group> getGroupListOfUser(String username) throws GroupManagementException {
         int tenantId = DeviceManagerUtil.getTenantId();
         try {
-            return this.groupDAO.getGroupListOfUser(username, tenantId);
+            return this.groupDAO.getGroupsOfUser(username, tenantId);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining groups for user " + username, e);
         }

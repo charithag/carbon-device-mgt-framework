@@ -161,13 +161,26 @@ public class DeviceManagementDAOTests {
         groupMgtDAO.addGroup(group);
     }
 
+    @Test(dependsOnMethods = {"addGroupTest"})
+    public void updateGroupTest() throws GroupManagementDAOException, GroupManagementException {
+        GroupDAO groupMgtDAO = DeviceManagementDAOFactory.getGroupDAO();
+        Group group = groupMgtDAO.getGroupById(getGroupId());
+        Assert.assertNotNull(group, "Group is null");
+        group.setName("Updated Group");
+        group.setDateOfLastUpdate(new Date().getTime());
+        group.setDescription("test group description with update");
+        groupMgtDAO.updateGroup(group);
+    }
+
     private int getGroupId() throws GroupManagementDAOException {
         GroupDAO groupMgtDAO = DeviceManagementDAOFactory.getGroupDAO();
-        List<Group> groupList = groupMgtDAO.getGroups();
+        List<Group> groupList = groupMgtDAO.getAllGroups();
+        int id = -1;
         if (!groupList.isEmpty()) {
-            return groupList.get(0).getId();
+            id = groupList.get(0).getId();
         }
-        return -1;
+        Assert.assertNotNull(id, "Group Id is null");
+        return id;
     }
 
     @Test(dependsOnMethods = {"addDeviceTypeTest", "addGroupTest"})
@@ -216,6 +229,25 @@ public class DeviceManagementDAOTests {
         Assert.assertNotNull(id, "Device Id is null");
         Assert.assertNotNull(status, "Device status is null");
         Assert.assertEquals(status, "ACTIVE", "Enroll device status should active");
+    }
+
+    @Test(dependsOnMethods = {"addDeviceTest"})
+    public void deleteDeviceTest() throws DeviceManagementDAOException, DeviceManagementException, GroupManagementDAOException {
+        DeviceDAO deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
+        int groupId = getGroupId();
+        List<Device> deviceList = deviceDAO.getDevicesByGroup(groupId, -1234);
+        for (Device d : deviceList){
+            int id = d.getId();
+            Assert.assertNotNull(id, "Device Id is null");
+            deviceDAO.deleteDevice(id);
+        }
+    }
+
+    @Test(dependsOnMethods = {"updateGroupTest", "deleteDeviceTest"})
+    public void deleteGroupTest() throws GroupManagementDAOException, GroupManagementException {
+        GroupDAO groupMgtDAO = DeviceManagementDAOFactory.getGroupDAO();
+        int id = getGroupId();
+        groupMgtDAO.deleteGroup(id);
     }
 
     private DataSource getDataSource() {
