@@ -39,6 +39,7 @@ import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.OwnerShip;
 import org.wso2.carbon.device.mgt.core.dto.Status;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.device.mgt.user.common.UserManagementException;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -150,7 +151,6 @@ public class DeviceManagementDAOTests {
     @Test
     public void addGroupTest() throws GroupManagementDAOException, GroupManagementException {
         GroupDAO groupMgtDAO = DeviceManagementDAOFactory.getGroupDAO();
-
         Group group = new Group();
         group.setName("Test Group");
         group.setDateOfCreation(new Date().getTime());
@@ -159,6 +159,7 @@ public class DeviceManagementDAOTests {
         group.setOwnerId("111");
         group.setTenantId(-1234);
         groupMgtDAO.addGroup(group);
+        log.info("Group added: " + group.getName());
     }
 
     @Test(dependsOnMethods = {"addGroupTest"})
@@ -170,6 +171,17 @@ public class DeviceManagementDAOTests {
         group.setDateOfLastUpdate(new Date().getTime());
         group.setDescription("test group description with update");
         groupMgtDAO.updateGroup(group);
+    }
+
+    @Test(dependsOnMethods = {"addGroupTest"})
+    public void getGroupUsersTest() throws GroupManagementDAOException, GroupManagementException, UserManagementException {
+//        List<User> usersList = DeviceManagementDataHolder.getInstance().getUserManager().getUsersForGroup(-1234, getGroupId());
+//        Assert.assertNotNull(usersList, "User list is null");
+//        log.info("***********************************");
+//        for (User u : usersList){
+//            log.info("Group user: " + u.getUserName());
+//        }
+//        log.info("***********************************");
     }
 
     private int getGroupId() throws GroupManagementDAOException {

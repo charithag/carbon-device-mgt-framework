@@ -27,7 +27,7 @@ import org.wso2.carbon.device.mgt.user.core.internal.DeviceMgtUserDataHolder;
 
 import java.util.List;
 
-public class UserManagementService implements UserManager{
+public class UserManagementService implements UserManager {
 
     @Override
     public List<User> getUsersForTenantAndRole(int tenantId, String roleName) throws UserManagementException {
@@ -44,8 +44,29 @@ public class UserManagementService implements UserManager{
         return DeviceMgtUserDataHolder.getInstance().getUserManager().getUsersForTenant(tenantId);
     }
 
-    @Override public User getUser(String username, int tenantId) throws UserManagementException {
+    @Override
+    public List<User> getUsersForGroup(int tenantId, int groupId) throws UserManagementException {
+        return DeviceMgtUserDataHolder.getInstance().getUserManager().getUsersForGroup(tenantId, groupId);
+    }
+
+    @Override
+    public User getUser(String username, int tenantId) throws UserManagementException {
         return DeviceMgtUserDataHolder.getInstance().getUserManager().getUser(username, tenantId);
+    }
+
+    @Override
+    public void addUserToGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException {
+        DeviceMgtUserDataHolder.getInstance().getUserManager().addUserToGroup(username, tenantId, groupId, accessLevel);
+    }
+
+    @Override
+    public void removeUserFromGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException {
+        DeviceMgtUserDataHolder.getInstance().getUserManager().removeUserFromGroup(username, tenantId, groupId, accessLevel);
+    }
+
+    @Override
+    public void addNewGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException {
+        DeviceMgtUserDataHolder.getInstance().getUserManager().addNewGroup(username, tenantId, groupId, accessLevel);
     }
 
 }

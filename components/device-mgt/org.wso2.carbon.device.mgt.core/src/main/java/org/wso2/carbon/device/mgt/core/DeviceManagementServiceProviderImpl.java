@@ -36,6 +36,7 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
+import org.wso2.carbon.device.mgt.user.common.UserManagementException;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -77,10 +78,17 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     @Override
     public void addGroup(Group group) throws GroupManagementException {
         try {
+            int tenantId = DeviceManagerUtil.getTenantId();
+            group.setTenantId(tenantId);
             this.groupDAO.addGroup(group);
+            group.setId(this.groupDAO.getGroupByName(group.getName(), group.getTenantId()).getId());
+            DeviceManagementDataHolder.getInstance().getUserManager().addNewGroup(group.getOwnerId(), group.getTenantId(), group.getId(), 1);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while adding group " +
                     "'" + group.getName() + "'", e);
+        } catch (UserManagementException e) {
+            throw new GroupManagementException("Error occurred while adding group " +
+                    "'" + group.getName() + "' role to user " + group.getOwnerId(), e);
         }
     }
 
@@ -358,7 +366,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                 messageBody = notificationMessage.getBody();
                 messageFooter1 = notificationMessage.getFooterLine1();
                 messageFooter2 = notificationMessage.getFooterLine2();
-                messageFooter3  = notificationMessage.getFooterLine3();
+                messageFooter3 = notificationMessage.getFooterLine3();
                 url = notificationMessage.getUrl();
                 subject = notificationMessage.getSubject();
                 break;
@@ -571,7 +579,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(DeviceIdentifier identifier,
-            Operation.Status status) throws OperationManagementException, DeviceManagementException {
+                                                                    Operation.Status status) throws OperationManagementException, DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getOperationManager().getOperationsByDeviceAndStatus(identifier,
                 status);
     }
@@ -717,7 +725,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             devicesList = this.getDeviceDAO().getDevicesByName(deviceName, tenantId);
         } catch (DeviceManagementDAOException e) {
             throw new DeviceManagementException("Error occurred while fetching the list of devices that matches to '"
-                                                + deviceName + "'", e);
+                    + deviceName + "'", e);
         }
 
         for (int x = 0; x < devicesList.size(); x++) {
@@ -737,7 +745,7 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                 devicesOfUser.add(convertedDevice);
             } catch (DeviceManagementDAOException e) {
                 log.error("Error occurred while obtaining the device type of DeviceTypeId '" +
-                          device.getDeviceTypeId() + "'", e);
+                        device.getDeviceTypeId() + "'", e);
             }
         }
         return devicesOfUser;

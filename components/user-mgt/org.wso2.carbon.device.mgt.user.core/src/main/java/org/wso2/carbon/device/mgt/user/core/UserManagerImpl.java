@@ -65,7 +65,7 @@ public class UserManagerImpl implements UserManager {
 //            LOCALITY,REGION,REGION,POSTAL_CODE,COUNTRY,HONE,IM,ORGANIZATION,URL,TITLE,ROLE,MOBILE,NICKNAME,
 //            DATE_OF_BIRTH,GENDER,ACCOUNT_STATUS,CHALLENGE_QUESTION_URI,IDENTITY_CLAIM_URI,TEMPORARY_EMAIL_ADDRESS};
 
-  //  private static final String CLAIM_URL_
+    //  private static final String CLAIM_URL_
 
     @Override
     public List<User> getUsersForTenantAndRole(int tenantId, String roleName) throws UserManagementException {
@@ -83,8 +83,8 @@ public class UserManagerImpl implements UserManager {
             for (String userName : userNames) {
                 newUser = new User(userName);
                 Claim[] claims = userStoreManager.getUserClaimValues(userName, null);
-                Map<String,String> claimMap = new HashMap<String, String>();
-                for(Claim claim:claims){
+                Map<String, String> claimMap = new HashMap<String, String>();
+                for (Claim claim : claims) {
                     String claimURI = claim.getClaimUri();
                     String value = claim.getValue();
                     claimMap.put(claimURI, value);
@@ -142,8 +142,8 @@ public class UserManagerImpl implements UserManager {
             for (String userName : userNames) {
                 newUser = new User(userName);
                 Claim[] claims = userStoreManager.getUserClaimValues(userName, null);
-                Map<String,String> claimMap = new HashMap<String, String>();
-                for(Claim claim:claims){
+                Map<String, String> claimMap = new HashMap<String, String>();
+                for (Claim claim : claims) {
                     String claimURI = claim.getClaimUri();
                     String value = claim.getValue();
                     claimMap.put(claimURI, value);
@@ -160,17 +160,51 @@ public class UserManagerImpl implements UserManager {
         return usersList;
     }
 
-    @Override public User getUser(String username, int tenantId) throws UserManagementException {
+    @Override
+    public List<User> getUsersForGroup(int tenantId, int groupId) throws UserManagementException {
+
+        UserStoreManager userStoreManager;
+        String[] userNames;
+        ArrayList usersList = new ArrayList();
+
+        try {
+            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                    .getUserStoreManager();
+
+            userNames = userStoreManager.getUserListOfRole("Internal/group_" + groupId + "/*");
+            User newUser;
+            for (String userName : userNames) {
+                newUser = new User(userName);
+                Claim[] claims = userStoreManager.getUserClaimValues(userName, null);
+                Map<String, String> claimMap = new HashMap<String, String>();
+                for (Claim claim : claims) {
+                    String claimURI = claim.getClaimUri();
+                    String value = claim.getValue();
+                    claimMap.put(claimURI, value);
+                }
+                setUserClaims(newUser, claimMap);
+                usersList.add(newUser);
+            }
+        } catch (UserStoreException userStoreEx) {
+            String errorMsg = "User store error in fetching user list for tenant id:" + tenantId + " group id:" + groupId;
+            log.error(errorMsg, userStoreEx);
+            throw new UserManagementException(errorMsg, userStoreEx);
+        }
+        return usersList;
+    }
+
+    @Override
+    public User getUser(String username, int tenantId) throws UserManagementException {
         UserStoreManager userStoreManager;
         User user;
         try {
             userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                                                      .getUserStoreManager();
+                    .getUserStoreManager();
             user = new User(username);
 
             Claim[] claims = userStoreManager.getUserClaimValues(username, null);
-            Map<String,String> claimMap = new HashMap<String, String>();
-            for(Claim claim:claims){
+            Map<String, String> claimMap = new HashMap<String, String>();
+            for (Claim claim : claims) {
                 String claimURI = claim.getClaimUri();
                 String value = claim.getValue();
                 claimMap.put(claimURI, value);
@@ -183,6 +217,56 @@ public class UserManagerImpl implements UserManager {
             throw new UserManagementException(errorMsg, userStoreEx);
         }
         return user;
+    }
+
+    @Override
+    public void addUserToGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException {
+        UserStoreManager userStoreManager;
+        String[] roleNames = new String[1];
+        try {
+            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                    .getUserStoreManager();
+            roleNames[0] = "Internal/group_" + groupId + "/" + accessLevel;
+            userStoreManager.updateRoleListOfUser(username, null, roleNames);
+        } catch (UserStoreException userStoreEx) {
+            String errorMsg = "User store error in adding user " + username + " to group id:" + groupId;
+            log.error(errorMsg, userStoreEx);
+            throw new UserManagementException(errorMsg, userStoreEx);
+        }
+    }
+
+    @Override
+    public void removeUserFromGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException {
+        UserStoreManager userStoreManager;
+        String[] roleNames = new String[1];
+        try {
+            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                    .getUserStoreManager();
+            roleNames[0] = "Internal/group_" + groupId + "/" + accessLevel;
+            userStoreManager.updateRoleListOfUser(username, roleNames, null);
+        } catch (UserStoreException userStoreEx) {
+            String errorMsg = "User store error in adding user " + username + " to group id:" + groupId;
+            log.error(errorMsg, userStoreEx);
+            throw new UserManagementException(errorMsg, userStoreEx);
+        }
+    }
+
+    @Override
+    public void addNewGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException {
+        UserStoreManager userStoreManager;
+        String roleName;
+        String[] userNames = new String[1];
+        try {
+            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                    .getUserStoreManager();
+            roleName = "Internal/groups_" + groupId + "/" + accessLevel;
+            userNames[0] = username;
+            userStoreManager.addRole(roleName, userNames, null);
+        } catch (UserStoreException userStoreEx) {
+            String errorMsg = "User store error in adding role to group id:" + groupId;
+            log.error(errorMsg, userStoreEx);
+            throw new UserManagementException(errorMsg, userStoreEx);
+        }
     }
 
     private void setUserClaims(User newUser, Map<String, String> claimMap) {

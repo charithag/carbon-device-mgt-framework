@@ -25,8 +25,12 @@ import org.wso2.carbon.device.mgt.user.common.UserManagementException;
 import java.util.List;
 
 public interface UserManager {
-    public List<User> getUsersForTenantAndRole(int tenantId, String roleName) throws UserManagementException;
-    public List<Role> getRolesForTenant(int tenantId) throws UserManagementException;
-    public List<User> getUsersForTenant(int tenantId) throws UserManagementException;
-    public User getUser(String username, int tenantId) throws UserManagementException;
+    List<User> getUsersForTenantAndRole(int tenantId, String roleName) throws UserManagementException;
+    List<Role> getRolesForTenant(int tenantId) throws UserManagementException;
+    List<User> getUsersForTenant(int tenantId) throws UserManagementException;
+    List<User> getUsersForGroup(int tenantId, int groupId) throws UserManagementException;
+    User getUser(String username, int tenantId) throws UserManagementException;
+    void addUserToGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException;
+    void removeUserFromGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException;
+    void addNewGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException;
 }
