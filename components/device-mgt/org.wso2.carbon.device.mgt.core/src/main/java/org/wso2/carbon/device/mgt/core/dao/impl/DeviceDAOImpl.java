@@ -206,20 +206,25 @@ public class DeviceDAOImpl implements DeviceDAO {
 
     @Override
     public List<Integer> getDeviceIds(List<DeviceIdentifier> devices) throws DeviceManagementDAOException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
         List<Integer> deviceIds = new ArrayList<Integer>();
         try {
-            Connection conn = this.getConnection();
+            conn = this.getConnection();
             String sql = "SELECT DISTINCT ID FROM DEVICE WHERE NAME IN (?) AND ID IN (?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt = conn.prepareStatement(sql);
             //stmt.setArray(1, new java.sql.Date[0]);
             stmt.setString(2, "");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                deviceIds.add(rs.getInt("ID"));
+            resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                deviceIds.add(resultSet.getInt("ID"));
             }
             return deviceIds;
         } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while retrieving device ids", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
         }
     }
 

@@ -21,6 +21,7 @@ package org.wso2.carbon.device.mgt.user.core;
 import org.wso2.carbon.device.mgt.user.common.Role;
 import org.wso2.carbon.device.mgt.user.common.User;
 import org.wso2.carbon.device.mgt.user.common.UserManagementException;
+import org.wso2.carbon.user.core.Permission;
 
 import java.util.List;
 
@@ -30,7 +31,9 @@ public interface UserManager {
     List<User> getUsersForTenant(int tenantId) throws UserManagementException;
     List<User> getUsersForGroup(int tenantId, int groupId) throws UserManagementException;
     User getUser(String username, int tenantId) throws UserManagementException;
-    void addUserToGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException;
-    void removeUserFromGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException;
-    void addNewGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException;
+    void addUserToGroup(String username, int tenantId, int groupId, String roleName) throws UserManagementException;
+    void removeUserFromGroup(String username, int tenantId, int groupId, String roleName) throws UserManagementException;
+    void addGroupRole(String username, int tenantId, int groupId, String roleName, Permission[] permissions) throws UserManagementException;
+    void removeGroupRole(int tenantId, int groupId, String roleName) throws UserManagementException;
+    List<String> getRolesForGroup(int tenantId, int groupId) throws UserManagementException;
 }

@@ -22,7 +22,6 @@ import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 
 import java.util.List;
@@ -89,8 +88,8 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public void addGroup(Group group) throws GroupManagementException {
-        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().addGroup(group);
+    public void createGroup(Group group) throws GroupManagementException {
+        DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().createGroup(group);
     }
 
     @Override

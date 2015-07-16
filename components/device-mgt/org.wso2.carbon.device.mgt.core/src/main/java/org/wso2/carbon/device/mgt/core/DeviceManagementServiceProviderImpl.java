@@ -76,13 +76,16 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public void addGroup(Group group) throws GroupManagementException {
+    public void createGroup(Group group) throws GroupManagementException {
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
             group.setTenantId(tenantId);
             this.groupDAO.addGroup(group);
             group.setId(this.groupDAO.getGroupByName(group.getName(), group.getTenantId()).getId());
-            DeviceManagementDataHolder.getInstance().getUserManager().addNewGroup(group.getOwnerId(), group.getTenantId(), group.getId(), 1);
+            DeviceManagementDataHolder.getInstance().getUserManager().addGroupRole(group.getOwnerId(), group.getTenantId(), group.getId(), "admin", null);
+            DeviceManagementDataHolder.getInstance().getUserManager().addGroupRole(group.getOwnerId(), group.getTenantId(), group.getId(), "monitor", null);
+            DeviceManagementDataHolder.getInstance().getUserManager().addGroupRole(group.getOwnerId(), group.getTenantId(), group.getId(), "operator", null);
+            log.info("Group added: " + group.getName());
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while adding group " +
                     "'" + group.getName() + "'", e);
@@ -104,11 +107,24 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     @Override
     public void removeGroup(int groupId) throws GroupManagementException {
+        String roleName;
         try {
+            Group group = getGroup(groupId);
             this.groupDAO.deleteGroup(groupId);
+            List<String> groupRoles = DeviceManagementDataHolder.getInstance().getUserManager().getRolesForGroup(group.getTenantId(), groupId);
+            for(String role: groupRoles){
+                if (role != null){
+                    roleName = role.replace("Internal/groups/" + groupId + "/","");
+                    DeviceManagementDataHolder.getInstance().getUserManager().removeGroupRole(group.getTenantId(), groupId, roleName);
+                }
+            }
+            log.info("Group removed: " + group.getName());
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while removing group " +
-                    "'" + groupId + "'", e);
+                    "'" + groupId + "' data", e);
+        } catch (UserManagementException e) {
+            throw new GroupManagementException("Error occurred while removing group " +
+                    "'" + groupId + "' roles", e);
         }
     }
 

@@ -27,6 +27,7 @@ import org.wso2.carbon.device.mgt.user.core.internal.DeviceMgtUserDataHolder;
 import org.wso2.carbon.user.api.Claim;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.user.core.Permission;
 import org.wso2.carbon.user.core.UserCoreConstants;
 
 import java.util.ArrayList;
@@ -171,7 +172,7 @@ public class UserManagerImpl implements UserManager {
             userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
 
-            userNames = userStoreManager.getUserListOfRole("Internal/group_" + groupId + "/*");
+            userNames = userStoreManager.getUserListOfRole("Internal/groups/" + groupId + "/*");
             User newUser;
             for (String userName : userNames) {
                 newUser = new User(userName);
@@ -220,14 +221,14 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public void addUserToGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException {
+    public void addUserToGroup(String username, int tenantId, int groupId, String roleName) throws UserManagementException {
         UserStoreManager userStoreManager;
-        String[] roleNames = new String[1];
+        String[] roles = new String[1];
         try {
             userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
-            roleNames[0] = "Internal/group_" + groupId + "/" + accessLevel;
-            userStoreManager.updateRoleListOfUser(username, null, roleNames);
+            roles[0] = "Internal/groups/" + groupId + "/" + roleName;
+            userStoreManager.updateRoleListOfUser(username, null, roles);
         } catch (UserStoreException userStoreEx) {
             String errorMsg = "User store error in adding user " + username + " to group id:" + groupId;
             log.error(errorMsg, userStoreEx);
@@ -236,14 +237,14 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public void removeUserFromGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException {
+    public void removeUserFromGroup(String username, int tenantId, int groupId, String roleName) throws UserManagementException {
         UserStoreManager userStoreManager;
-        String[] roleNames = new String[1];
+        String[] roles = new String[1];
         try {
             userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
-            roleNames[0] = "Internal/group_" + groupId + "/" + accessLevel;
-            userStoreManager.updateRoleListOfUser(username, roleNames, null);
+            roles[0] = "Internal/groups/" + groupId + "/" + roleName;
+            userStoreManager.updateRoleListOfUser(username, roles, null);
         } catch (UserStoreException userStoreEx) {
             String errorMsg = "User store error in adding user " + username + " to group id:" + groupId;
             log.error(errorMsg, userStoreEx);
@@ -252,16 +253,55 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public void addNewGroup(String username, int tenantId, int groupId, int accessLevel) throws UserManagementException {
+    public void addGroupRole(String username, int tenantId, int groupId, String roleName, Permission[] permissions) throws UserManagementException {
         UserStoreManager userStoreManager;
-        String roleName;
+        String role;
         String[] userNames = new String[1];
         try {
             userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
-            roleName = "Internal/groups_" + groupId + "/" + accessLevel;
+            role = "Internal//groups/" + groupId + "/" + roleName;
             userNames[0] = username;
-            userStoreManager.addRole(roleName, userNames, null);
+            userStoreManager.addRole(role, userNames, permissions);
+        } catch (UserStoreException userStoreEx) {
+            String errorMsg = "User store error in adding role to group id:" + groupId;
+            log.error(errorMsg, userStoreEx);
+            throw new UserManagementException(errorMsg, userStoreEx);
+        }
+    }
+
+    @Override
+    public void removeGroupRole(int tenantId, int groupId, String roleName) throws UserManagementException {
+        UserStoreManager userStoreManager;
+        String role;
+        try {
+            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                    .getUserStoreManager();
+            role = "Internal/groups/" + groupId + "/" + roleName;
+            userStoreManager.deleteRole(role);
+        } catch (UserStoreException userStoreEx) {
+            String errorMsg = "User store error in adding role to group id:" + groupId;
+            log.error(errorMsg, userStoreEx);
+            throw new UserManagementException(errorMsg, userStoreEx);
+        }
+    }
+
+    @Override
+    public List<String> getRolesForGroup(int tenantId, int groupId) throws UserManagementException {
+        UserStoreManager userStoreManager;
+        String[] roles;
+        List<String> groupRoles;
+        try {
+            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+                    .getUserStoreManager();
+            roles = userStoreManager.getRoleNames();
+            groupRoles = new ArrayList<String>();
+            for (String r : roles){
+                if (r!= null && r.contains("groups/" + groupId)) {
+                    groupRoles.add(r);
+                }
+            }
+            return groupRoles;
         } catch (UserStoreException userStoreEx) {
             String errorMsg = "User store error in adding role to group id:" + groupId;
             log.error(errorMsg, userStoreEx);

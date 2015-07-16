@@ -35,7 +35,7 @@ public interface GroupManager {
      * @param group Metadata corresponding to the group being added
      * @throws GroupManagementException If some unusual behaviour is observed while adding a group
      */
-    void addGroup(Group group) throws GroupManagementException;
+    void createGroup(Group group) throws GroupManagementException;
 
     /**
      * Method to modify the metadata corresponding to group.
