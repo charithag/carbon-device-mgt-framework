@@ -27,7 +27,10 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.common.spi.DeviceManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.email.NotificationMessages;
-import org.wso2.carbon.device.mgt.core.dao.*;
+import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.dto.Status;
@@ -36,7 +39,6 @@ import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
-import org.wso2.carbon.device.mgt.user.common.UserManagementException;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -48,20 +50,17 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
 
     private static Log log = LogFactory.getLog(DeviceManagementServiceProviderImpl.class);
     private DeviceDAO deviceDAO;
-    private GroupDAO groupDAO;
     private DeviceTypeDAO deviceTypeDAO;
     private DeviceManagementRepository pluginRepository;
 
     public DeviceManagementServiceProviderImpl(DeviceManagementRepository pluginRepository) {
         this.pluginRepository = pluginRepository;
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        this.groupDAO = DeviceManagementDAOFactory.getGroupDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
     public DeviceManagementServiceProviderImpl() {
         this.deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        this.groupDAO = DeviceManagementDAOFactory.getGroupDAO();
         this.deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
     }
 
@@ -75,58 +74,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         return null;
     }
 
-    @Override
-    public void createGroup(Group group) throws GroupManagementException {
-        try {
-            int tenantId = DeviceManagerUtil.getTenantId();
-            group.setTenantId(tenantId);
-            this.groupDAO.addGroup(group);
-            group.setId(this.groupDAO.getGroupByName(group.getName(), group.getTenantId()).getId());
-            DeviceManagementDataHolder.getInstance().getUserManager().addGroupRole(group.getOwnerId(), group.getTenantId(), group.getId(), "admin", null);
-            DeviceManagementDataHolder.getInstance().getUserManager().addGroupRole(group.getOwnerId(), group.getTenantId(), group.getId(), "monitor", null);
-            DeviceManagementDataHolder.getInstance().getUserManager().addGroupRole(group.getOwnerId(), group.getTenantId(), group.getId(), "operator", null);
-            log.info("Group added: " + group.getName());
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while adding group " +
-                    "'" + group.getName() + "'", e);
-        } catch (UserManagementException e) {
-            throw new GroupManagementException("Error occurred while adding group " +
-                    "'" + group.getName() + "' role to user " + group.getOwnerId(), e);
-        }
-    }
-
-    @Override
-    public void modifyGroup(Group group) throws GroupManagementException {
-        try {
-            this.groupDAO.updateGroup(group);
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while modifying group " +
-                    "'" + group.getName() + "'", e);
-        }
-    }
-
-    @Override
-    public void removeGroup(int groupId) throws GroupManagementException {
-        String roleName;
-        try {
-            Group group = getGroup(groupId);
-            this.groupDAO.deleteGroup(groupId);
-            List<String> groupRoles = DeviceManagementDataHolder.getInstance().getUserManager().getRolesForGroup(group.getTenantId(), groupId);
-            for(String role: groupRoles){
-                if (role != null){
-                    roleName = role.replace("Internal/groups/" + groupId + "/","");
-                    DeviceManagementDataHolder.getInstance().getUserManager().removeGroupRole(group.getTenantId(), groupId, roleName);
-                }
-            }
-            log.info("Group removed: " + group.getName());
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while removing group " +
-                    "'" + groupId + "' data", e);
-        } catch (UserManagementException e) {
-            throw new GroupManagementException("Error occurred while removing group " +
-                    "'" + groupId + "' roles", e);
-        }
-    }
 
     @Override
     public FeatureManager getFeatureManager(String type) {
@@ -301,63 +248,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
                     "'" + username + "'", e);
         }
         return devicesOfUser;
-    }
-
-    @Override
-    public List<Device> getDevicesByGroup(int groupId) throws DeviceManagementException {
-        List<Device> devicesInGroup = new ArrayList<Device>();
-        try {
-            int tenantId = DeviceManagerUtil.getTenantId();
-            List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO.getDevicesByGroup(groupId, tenantId);
-            for (int x = 0; x < devicesList.size(); x++) {
-                org.wso2.carbon.device.mgt.core.dto.Device device = devicesList.get(x);
-                device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
-                DeviceManager dms =
-                        this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
-                Device convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
-                DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-                deviceIdentifier.setId(device.getDeviceIdentificationId());
-                deviceIdentifier.setType(device.getDeviceType().getName());
-                Device dmsDevice = dms.getDevice(deviceIdentifier);
-                if (dmsDevice != null) {
-                    convertedDevice.setProperties(dmsDevice.getProperties());
-                    convertedDevice.setFeatures(dmsDevice.getFeatures());
-                }
-                devicesInGroup.add(convertedDevice);
-            }
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining devices for group " +
-                    "'" + groupId + "'", e);
-        }
-        return devicesInGroup;
-    }
-
-    @Override
-    public List<Group> getAllGroups() throws GroupManagementException {
-        try {
-            return this.groupDAO.getAllGroups();
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while obtaining groups", e);
-        }
-    }
-
-    @Override
-    public Group getGroup(int groupId) throws GroupManagementException {
-        try {
-            return this.groupDAO.getGroupById(groupId);
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while obtaining group " + groupId, e);
-        }
-    }
-
-    @Override
-    public List<Group> getGroupListOfUser(String username) throws GroupManagementException {
-        int tenantId = DeviceManagerUtil.getTenantId();
-        try {
-            return this.groupDAO.getGroupsOfUser(username, tenantId);
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while obtaining groups for user " + username, e);
-        }
     }
 
     @Override
@@ -723,11 +613,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
     }
 
     @Override
-    public int getGroupCount() throws GroupManagementException {
-        return this.getGroupCount();
-    }
-
-    @Override
     public List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementException {
         List<Device> devicesOfUser = new ArrayList<Device>();
         List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList;
@@ -765,15 +650,6 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
             }
         }
         return devicesOfUser;
-    }
-
-    @Override
-    public List<Group> getGroupsByName(String groupName, int tenantId) throws GroupManagementException {
-        return this.getGroupsByName(groupName, tenantId);
-    }
-
-    public GroupDAO getGroupDAO() {
-        return groupDAO;
     }
 
 }

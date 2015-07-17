@@ -27,7 +27,6 @@ import org.wso2.carbon.device.mgt.user.core.internal.DeviceMgtUserDataHolder;
 import org.wso2.carbon.user.api.Claim;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
-import org.wso2.carbon.user.core.Permission;
 import org.wso2.carbon.user.core.UserCoreConstants;
 
 import java.util.ArrayList;
@@ -162,39 +161,6 @@ public class UserManagerImpl implements UserManager {
     }
 
     @Override
-    public List<User> getUsersForGroup(int tenantId, int groupId) throws UserManagementException {
-
-        UserStoreManager userStoreManager;
-        String[] userNames;
-        ArrayList usersList = new ArrayList();
-
-        try {
-            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                    .getUserStoreManager();
-
-            userNames = userStoreManager.getUserListOfRole("Internal/groups/" + groupId + "/*");
-            User newUser;
-            for (String userName : userNames) {
-                newUser = new User(userName);
-                Claim[] claims = userStoreManager.getUserClaimValues(userName, null);
-                Map<String, String> claimMap = new HashMap<String, String>();
-                for (Claim claim : claims) {
-                    String claimURI = claim.getClaimUri();
-                    String value = claim.getValue();
-                    claimMap.put(claimURI, value);
-                }
-                setUserClaims(newUser, claimMap);
-                usersList.add(newUser);
-            }
-        } catch (UserStoreException userStoreEx) {
-            String errorMsg = "User store error in fetching user list for tenant id:" + tenantId + " group id:" + groupId;
-            log.error(errorMsg, userStoreEx);
-            throw new UserManagementException(errorMsg, userStoreEx);
-        }
-        return usersList;
-    }
-
-    @Override
     public User getUser(String username, int tenantId) throws UserManagementException {
         UserStoreManager userStoreManager;
         User user;
@@ -218,95 +184,6 @@ public class UserManagerImpl implements UserManager {
             throw new UserManagementException(errorMsg, userStoreEx);
         }
         return user;
-    }
-
-    @Override
-    public void addUserToGroup(String username, int tenantId, int groupId, String roleName) throws UserManagementException {
-        UserStoreManager userStoreManager;
-        String[] roles = new String[1];
-        try {
-            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                    .getUserStoreManager();
-            roles[0] = "Internal/groups/" + groupId + "/" + roleName;
-            userStoreManager.updateRoleListOfUser(username, null, roles);
-        } catch (UserStoreException userStoreEx) {
-            String errorMsg = "User store error in adding user " + username + " to group id:" + groupId;
-            log.error(errorMsg, userStoreEx);
-            throw new UserManagementException(errorMsg, userStoreEx);
-        }
-    }
-
-    @Override
-    public void removeUserFromGroup(String username, int tenantId, int groupId, String roleName) throws UserManagementException {
-        UserStoreManager userStoreManager;
-        String[] roles = new String[1];
-        try {
-            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                    .getUserStoreManager();
-            roles[0] = "Internal/groups/" + groupId + "/" + roleName;
-            userStoreManager.updateRoleListOfUser(username, roles, null);
-        } catch (UserStoreException userStoreEx) {
-            String errorMsg = "User store error in adding user " + username + " to group id:" + groupId;
-            log.error(errorMsg, userStoreEx);
-            throw new UserManagementException(errorMsg, userStoreEx);
-        }
-    }
-
-    @Override
-    public void addGroupRole(String username, int tenantId, int groupId, String roleName, Permission[] permissions) throws UserManagementException {
-        UserStoreManager userStoreManager;
-        String role;
-        String[] userNames = new String[1];
-        try {
-            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                    .getUserStoreManager();
-            role = "Internal//groups/" + groupId + "/" + roleName;
-            userNames[0] = username;
-            userStoreManager.addRole(role, userNames, permissions);
-        } catch (UserStoreException userStoreEx) {
-            String errorMsg = "User store error in adding role to group id:" + groupId;
-            log.error(errorMsg, userStoreEx);
-            throw new UserManagementException(errorMsg, userStoreEx);
-        }
-    }
-
-    @Override
-    public void removeGroupRole(int tenantId, int groupId, String roleName) throws UserManagementException {
-        UserStoreManager userStoreManager;
-        String role;
-        try {
-            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                    .getUserStoreManager();
-            role = "Internal/groups/" + groupId + "/" + roleName;
-            userStoreManager.deleteRole(role);
-        } catch (UserStoreException userStoreEx) {
-            String errorMsg = "User store error in adding role to group id:" + groupId;
-            log.error(errorMsg, userStoreEx);
-            throw new UserManagementException(errorMsg, userStoreEx);
-        }
-    }
-
-    @Override
-    public List<String> getRolesForGroup(int tenantId, int groupId) throws UserManagementException {
-        UserStoreManager userStoreManager;
-        String[] roles;
-        List<String> groupRoles;
-        try {
-            userStoreManager = DeviceMgtUserDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                    .getUserStoreManager();
-            roles = userStoreManager.getRoleNames();
-            groupRoles = new ArrayList<String>();
-            for (String r : roles){
-                if (r!= null && r.contains("groups/" + groupId)) {
-                    groupRoles.add(r);
-                }
-            }
-            return groupRoles;
-        } catch (UserStoreException userStoreEx) {
-            String errorMsg = "User store error in adding role to group id:" + groupId;
-            log.error(errorMsg, userStoreEx);
-            throw new UserManagementException(errorMsg, userStoreEx);
-        }
     }
 
     private void setUserClaims(User newUser, Map<String, String> claimMap) {

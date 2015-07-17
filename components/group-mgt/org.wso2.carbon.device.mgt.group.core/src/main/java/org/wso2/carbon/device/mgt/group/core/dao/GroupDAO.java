@@ -16,9 +16,9 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core.dao;
+package org.wso2.carbon.device.mgt.group.core.dao;
 
-import org.wso2.carbon.device.mgt.common.Group;
+import org.wso2.carbon.device.mgt.group.common.Group;
 
 import java.util.List;
 

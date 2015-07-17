@@ -27,9 +27,10 @@ import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.device.mgt.common.Group;
-import org.wso2.carbon.device.mgt.common.GroupManagementException;
-import org.wso2.carbon.device.mgt.core.dao.*;
+import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
+import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
+import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.common.DBTypes;
@@ -54,7 +55,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -166,37 +166,13 @@ public class PolicyDAOTestCase {
         deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType());
     }
 
-
-    @Test
-    public void addGroupTest() throws GroupManagementDAOException, GroupManagementException {
-        GroupDAO groupMgtDAO = DeviceManagementDAOFactory.getGroupDAO();
-
-        Group group = new Group();
-        group.setName("Test Group");
-        group.setDateOfCreation(new Date().getTime());
-        group.setDateOfLastUpdate(new Date().getTime());
-        group.setDescription("test group description");
-        group.setOwnerId("111");
-        group.setTenantId(-1234);
-        groupMgtDAO.addGroup(group);
-    }
-
-    private int getGroupId() throws GroupManagementDAOException {
-        GroupDAO groupMgtDAO = DeviceManagementDAOFactory.getGroupDAO();
-        List<Group> groupList = groupMgtDAO.getAllGroups();
-        if (!groupList.isEmpty()) {
-            return groupList.get(0).getId();
-        }
-        return -1;
-    }
-
-    @Test(dependsOnMethods = {"addDeviceType", "addGroupTest"})
-    public void addDevice() throws DeviceManagementDAOException, GroupManagementDAOException {
+    @Test(dependsOnMethods = {"addDeviceType"})
+    public void addDevice() throws DeviceManagementDAOException {
 
         DeviceDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceDAO();
         List<Device> devices = DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType());
         for (Device device : devices) {
-            device.setGroupId(getGroupId());
+            device.setGroupId(1);
             deviceTypeDAO.addDevice(device);
         }
     }

@@ -24,7 +24,6 @@ import org.wso2.carbon.device.mgt.user.common.User;
 import org.wso2.carbon.device.mgt.user.common.UserManagementException;
 import org.wso2.carbon.device.mgt.user.core.UserManager;
 import org.wso2.carbon.device.mgt.user.core.internal.DeviceMgtUserDataHolder;
-import org.wso2.carbon.user.core.Permission;
 
 import java.util.List;
 
@@ -46,38 +45,8 @@ public class UserManagementService implements UserManager {
     }
 
     @Override
-    public List<User> getUsersForGroup(int tenantId, int groupId) throws UserManagementException {
-        return DeviceMgtUserDataHolder.getInstance().getUserManager().getUsersForGroup(tenantId, groupId);
-    }
-
-    @Override
     public User getUser(String username, int tenantId) throws UserManagementException {
         return DeviceMgtUserDataHolder.getInstance().getUserManager().getUser(username, tenantId);
-    }
-
-    @Override
-    public void addUserToGroup(String username, int tenantId, int groupId, String roleName) throws UserManagementException {
-        DeviceMgtUserDataHolder.getInstance().getUserManager().addUserToGroup(username, tenantId, groupId, roleName);
-    }
-
-    @Override
-    public void removeUserFromGroup(String username, int tenantId, int groupId, String roleName) throws UserManagementException {
-        DeviceMgtUserDataHolder.getInstance().getUserManager().removeUserFromGroup(username, tenantId, groupId, roleName);
-    }
-
-    @Override
-    public void addGroupRole(String username, int tenantId, int groupId, String roleName, Permission[] permissions) throws UserManagementException {
-        DeviceMgtUserDataHolder.getInstance().getUserManager().addGroupRole(username, tenantId, groupId, roleName, permissions);
-    }
-
-    @Override
-    public void removeGroupRole(int tenantId, int groupId, String roleName) throws UserManagementException {
-        DeviceMgtUserDataHolder.getInstance().getUserManager().removeGroupRole(tenantId, groupId, roleName);
-    }
-
-    @Override
-    public List<String> getRolesForGroup(int tenantId, int groupId) throws UserManagementException {
-        return DeviceMgtUserDataHolder.getInstance().getUserManager().getRolesForGroup(tenantId,groupId);
     }
 
 }

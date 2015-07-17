@@ -16,14 +16,11 @@
  * under the License.
  */
 
-package org.wso2.carbon.device.mgt.core.dao.impl;
+package org.wso2.carbon.device.mgt.group.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.common.Group;
-import org.wso2.carbon.device.mgt.core.dao.GroupDAO;
-import org.wso2.carbon.device.mgt.core.dao.GroupManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.util.GroupManagementDAOUtil;
+import org.wso2.carbon.device.mgt.group.common.Group;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
