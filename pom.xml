@@ -43,6 +43,7 @@
         <module>components/webapp-authenticator-framework</module>
         <module>components/oauth-extensions</module>
         <module>features/device-mgt</module>
+        <module>features/group-mgt</module>
         <module>features/policy-mgt</module>
         <module>features/user-mgt</module>
         <module>features/webapp-authenticator-framework</module>
