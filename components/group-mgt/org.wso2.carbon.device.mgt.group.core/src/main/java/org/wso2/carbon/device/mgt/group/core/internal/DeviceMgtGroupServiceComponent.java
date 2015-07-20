@@ -21,13 +21,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
+import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.group.core.GroupManagementServiceProvider;
 import org.wso2.carbon.device.mgt.group.core.GroupManagementServiceProviderImpl;
+import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.group.core.service.GroupManagementService;
 import org.wso2.carbon.device.mgt.group.core.service.GroupManagementServiceImpl;
 import org.wso2.carbon.device.mgt.user.core.UserManager;
-import org.wso2.carbon.device.mgt.user.core.internal.DeviceMgtUserServiceComponent;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -54,7 +57,7 @@ import org.wso2.carbon.user.core.service.RealmService;
 
 public class DeviceMgtGroupServiceComponent {
 
-    private static Log log = LogFactory.getLog(DeviceMgtUserServiceComponent.class);
+    private static Log log = LogFactory.getLog(DeviceMgtGroupServiceComponent.class);
 
     protected void activate(ComponentContext componentContext) {
         try {
@@ -62,6 +65,12 @@ public class DeviceMgtGroupServiceComponent {
             if (log.isDebugEnabled()) {
                 log.debug("Initializing group management core bundle");
             }
+
+            DeviceManagementConfig config =
+                    DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
+
+            DataSourceConfig dsConfig = config.getDeviceManagementConfigRepository().getDataSourceConfig();
+            GroupManagementDAOFactory.init(dsConfig);
 
             GroupManagementServiceProvider groupManagementServiceProvider = new GroupManagementServiceProviderImpl();
             DeviceMgtGroupDataHolder.getInstance().setGroupManagementServiceProvider(groupManagementServiceProvider);
