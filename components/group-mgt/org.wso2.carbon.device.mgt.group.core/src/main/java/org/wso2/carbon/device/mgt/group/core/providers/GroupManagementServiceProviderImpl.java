@@ -13,7 +13,6 @@ import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.group.core.internal.DeviceMgtGroupDataHolder;
 import org.wso2.carbon.device.mgt.user.common.User;
-import org.wso2.carbon.user.api.AuthorizationManager;
 import org.wso2.carbon.user.api.Claim;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
@@ -335,20 +334,6 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             throw new GroupManagementException(errorMsg, userStoreEx);
         }
         return usersList;
-    }
-
-    @Override
-    public String[] getPermissionsForGroupRole(int groupId, String sharingRole) throws GroupManagementException {
-        AuthorizationManager authorizationManager;
-        String[] permissions;
-        try {
-            int tenantId = DeviceManagerUtil.getTenantId();
-            authorizationManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId).getAuthorizationManager();
-            authorizationManager.authorizeRole("Internal/groups/" + groupId + "/" + sharingRole, "Device Grouping", "Create Group");
-            throw new GroupManagementException("Method not implemented", new Exception());
-        } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user store manager", e);
-        }
     }
 
     @Override

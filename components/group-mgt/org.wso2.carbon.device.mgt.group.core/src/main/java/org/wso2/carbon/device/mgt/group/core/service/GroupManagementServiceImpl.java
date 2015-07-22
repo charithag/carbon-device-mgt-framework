@@ -83,11 +83,6 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     }
 
     @Override
-    public String[] getPermissionsForGroupRole(int groupId, String sharingRole) throws GroupManagementException {
-        return DeviceMgtGroupDataHolder.getInstance().getGroupManagementServiceProvider().getPermissionsForGroupRole(groupId, sharingRole);
-    }
-
-    @Override
     public List<Device> getAllDevicesInGroup(int groupId) throws GroupManagementException {
         return DeviceMgtGroupDataHolder.getInstance().getGroupManagementServiceProvider().getAllDevicesInGroup(groupId);
     }
