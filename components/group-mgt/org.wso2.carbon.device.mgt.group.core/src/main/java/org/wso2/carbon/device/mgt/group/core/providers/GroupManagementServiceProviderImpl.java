@@ -1,12 +1,10 @@
-package org.wso2.carbon.device.mgt.group.core;
+package org.wso2.carbon.device.mgt.group.core.providers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.Device;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
 import org.wso2.carbon.device.mgt.core.util.DeviceManagerUtil;
 import org.wso2.carbon.device.mgt.group.common.Group;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
@@ -15,6 +13,7 @@ import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.group.core.internal.DeviceMgtGroupDataHolder;
 import org.wso2.carbon.device.mgt.user.common.User;
+import org.wso2.carbon.user.api.AuthorizationManager;
 import org.wso2.carbon.user.api.Claim;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
@@ -54,13 +53,9 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     public static final String TEMPORARY_EMAIL_ADDRESS = UserCoreConstants.ClaimTypeURIs.TEMPORARY_EMAIL_ADDRESS;
 
     private GroupDAO groupDAO;
-    private DeviceDAO deviceDAO;
-    private DeviceTypeDAO deviceTypeDAO;
 
     public GroupManagementServiceProviderImpl() {
         this.groupDAO = GroupManagementDAOFactory.getGroupDAO();
-        this.deviceDAO = GroupManagementDAOFactory.getDeviceDAO();
-        this.deviceTypeDAO = GroupManagementDAOFactory.getDeviceTypeDAO();
     }
 
     @Override
@@ -344,12 +339,12 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
 
     @Override
     public String[] getPermissionsForGroupRole(int groupId, String sharingRole) throws GroupManagementException {
-        UserStoreManager userStoreManager;
+        AuthorizationManager authorizationManager;
         String[] permissions;
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
-                    .getUserStoreManager();
+            authorizationManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId).getAuthorizationManager();
+            authorizationManager.authorizeRole("Internal/groups/" + groupId + "/" + sharingRole, "Device Grouping", "Create Group");
             throw new GroupManagementException("Method not implemented", new Exception());
         } catch (UserStoreException e) {
             throw new GroupManagementException("Error occurred while getting user store manager", e);
@@ -357,21 +352,32 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     }
 
     @Override
-    public List<Device> getAllDevicesInGroup(int groupId) throws DeviceManagementException {
-        List<Device> devicesInGroup = new ArrayList<Device>();
+    public List<Device> getAllDevicesInGroup(int groupId) throws GroupManagementException {
+        List<Device> devicesInGroup;
         try {
-            int tenantId = DeviceManagerUtil.getTenantId();
-            List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO.getDevicesByGroup(groupId, tenantId);
-            for (int x = 0; x < devicesList.size(); x++) {
-                org.wso2.carbon.device.mgt.core.dto.Device coreDevice = devicesList.get(x);
-
-                //devicesInGroup.add(device);
-            }
-            throw new DeviceManagementException("Method not implemented", new Exception());
-        } catch (DeviceManagementDAOException e) {
-            throw new DeviceManagementException("Error occurred while obtaining devices for group " +
-                    "'" + groupId + "'", e);
+            devicesInGroup = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getDevicesByGroup(groupId);
+            return devicesInGroup;
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while getting devices in group", e);
         }
+    }
+
+    @Override
+    public boolean addDeviceToGroup(DeviceIdentifier deviceId, int groupId) throws GroupManagementException {
+        Device device;
+        Group group;
+        try {
+            device = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getDevice(deviceId);
+            group = this.getGroupById(groupId);
+            if (device == null || group == null) {
+                return false;
+            }
+            device.setGroupId(group.getId());
+            DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
+        } catch (DeviceManagementException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void setUserClaims(User newUser, Map<String, String> claimMap) {

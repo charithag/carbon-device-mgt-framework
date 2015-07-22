@@ -29,44 +29,44 @@ import java.util.List;
  */
 public interface DeviceDAO {
 
-	void addDevice(Device device) throws DeviceManagementDAOException;
+    void addDevice(Device device) throws DeviceManagementDAOException;
 
-	void updateDevice(Device device) throws DeviceManagementDAOException;
+    void updateDevice(Device device) throws DeviceManagementDAOException;
 
-	void updateDeviceStatus(int deviceId, Status status) throws DeviceManagementDAOException;
+    void updateDeviceStatus(int deviceId, Status status) throws DeviceManagementDAOException;
 
-	void deleteDevice(int deviceId) throws DeviceManagementDAOException;
+    void deleteDevice(int deviceId) throws DeviceManagementDAOException;
 
-	Device getDevice(int deviceId) throws DeviceManagementDAOException;
+    Device getDevice(int deviceId) throws DeviceManagementDAOException;
 
     Device getDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementDAOException;
 
-	List<Device> getDevices() throws DeviceManagementDAOException;
+    List<Device> getDevices() throws DeviceManagementDAOException;
 
     List<Integer> getDeviceIds(List<DeviceIdentifier> devices) throws DeviceManagementDAOException;
 
-	/**
-	 * @param type - The device type id.
-	 * @return a list of devices based on the type id.
-	 * @throws DeviceManagementDAOException
-	 */
-	List<Device> getDevices(int type) throws DeviceManagementDAOException;
+    /**
+     * @param type - The device type id.
+     * @return a list of devices based on the type id.
+     * @throws DeviceManagementDAOException
+     */
+    List<Device> getDevices(int type) throws DeviceManagementDAOException;
 
-	/**
-	 * @param groupId - The group id.
-	 * @param tenantId
-	 * @return a list of devices in specified group
-	 * @throws DeviceManagementDAOException
-	 */
-	List<Device> getDevicesByGroup(int groupId, int tenantId) throws DeviceManagementDAOException;
+    /**
+     * @param groupId - The group id.
+     * @return a list of devices in specified group
+     * @throws DeviceManagementDAOException
+     */
+    List<Device> getDevicesByGroup(int groupId, int tenantId) throws DeviceManagementDAOException;
 
-	/**
-	 * Get the list of devices belongs to a user.
-	 * @param username Requested user.
-	 * @return List of devices of the user.
-	 * @throws DeviceManagementDAOException
-	 */
-	List<Device> getDeviceListOfUser(String username , int tenantId) throws DeviceManagementDAOException;
+    /**
+     * Get the list of devices belongs to a user.
+     *
+     * @param username Requested user.
+     * @return List of devices of the user.
+     * @throws DeviceManagementDAOException
+     */
+    List<Device> getDeviceListOfUser(String username, int tenantId) throws DeviceManagementDAOException;
 
     /**
      * Get the count of devices
@@ -83,5 +83,5 @@ public interface DeviceDAO {
      * @return List of devices that matches with the given device name.
      * @throws DeviceManagementDAOException
      */
-    List<Device> getDevicesByName(String deviceName , int tenantId) throws DeviceManagementDAOException;
+    List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException;
 }

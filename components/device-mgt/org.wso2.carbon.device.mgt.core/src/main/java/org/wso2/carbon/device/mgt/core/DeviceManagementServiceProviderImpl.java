@@ -652,4 +652,40 @@ public class DeviceManagementServiceProviderImpl implements DeviceManagementServ
         return devicesOfUser;
     }
 
+    @Override
+    public List<Device> getDevicesByGroup(int groupId) throws DeviceManagementException {
+        int tenantId = DeviceManagerUtil.getTenantId();
+        Device convertedDevice;
+        DeviceIdentifier deviceIdentifier;
+        DeviceManager dms;
+        Device dmsDevice;
+        List<Device> devicesOfGroup = new ArrayList<Device>();
+        try {
+            List<org.wso2.carbon.device.mgt.core.dto.Device> devicesList = this.deviceDAO
+                    .getDevicesByGroup(groupId, tenantId);
+            for (org.wso2.carbon.device.mgt.core.dto.Device device : devicesList) {
+                try {
+                    device.setDeviceType(deviceTypeDAO.getDeviceType(device.getDeviceTypeId()));
+                    dms = this.getPluginRepository().getDeviceManagementProvider(device.getDeviceType().getName());
+                    convertedDevice = DeviceManagementDAOUtil.convertDevice(device, device.getDeviceType());
+                    deviceIdentifier = new DeviceIdentifier();
+                    deviceIdentifier.setId(device.getDeviceIdentificationId());
+                    deviceIdentifier.setType(device.getDeviceType().getName());
+                    dmsDevice = dms.getDevice(deviceIdentifier);
+                    if (dmsDevice != null) {
+                        convertedDevice.setProperties(dmsDevice.getProperties());
+                        convertedDevice.setFeatures(dmsDevice.getFeatures());
+                    }
+                    devicesOfGroup.add(convertedDevice);
+                } catch (DeviceManagementDAOException e) {
+                    log.error("Error occurred while obtaining the device type of DeviceTypeId '" +
+                            device.getDeviceTypeId() + "'", e);
+                }
+            }
+            return devicesOfGroup;
+        } catch (DeviceManagementDAOException e) {
+            throw new DeviceManagementException("Error occurred while obtaining the devices for group " + groupId, e);
+        }
+    }
+
 }

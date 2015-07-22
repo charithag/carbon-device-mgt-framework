@@ -19,7 +19,7 @@
 package org.wso2.carbon.device.mgt.group.core.internal;
 
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
-import org.wso2.carbon.device.mgt.group.core.GroupManagementServiceProvider;
+import org.wso2.carbon.device.mgt.group.core.providers.GroupManagementServiceProvider;
 import org.wso2.carbon.device.mgt.user.core.UserManager;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;

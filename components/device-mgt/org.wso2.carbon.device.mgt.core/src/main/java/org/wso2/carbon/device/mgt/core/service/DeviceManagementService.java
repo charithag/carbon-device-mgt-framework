@@ -88,4 +88,11 @@ public interface DeviceManagementService extends DeviceManager, LicenseManager, 
      */
     List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementException;
 
+    /**
+     * @param groupId of the group
+     * @return List of devices in specified group.
+     * @throws DeviceManagementException
+     */
+    List<Device> getDevicesByGroup(int groupId) throws DeviceManagementException;
+
 }

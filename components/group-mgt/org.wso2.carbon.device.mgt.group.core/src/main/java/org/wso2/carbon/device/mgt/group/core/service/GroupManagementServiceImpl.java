@@ -1,7 +1,7 @@
 package org.wso2.carbon.device.mgt.group.core.service;
 
 import org.wso2.carbon.device.mgt.common.Device;
-import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.group.common.Group;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
 import org.wso2.carbon.device.mgt.group.core.internal.DeviceMgtGroupDataHolder;
@@ -88,7 +88,12 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     }
 
     @Override
-    public List<Device> getAllDevicesInGroup(int groupId) throws DeviceManagementException {
+    public List<Device> getAllDevicesInGroup(int groupId) throws GroupManagementException {
         return DeviceMgtGroupDataHolder.getInstance().getGroupManagementServiceProvider().getAllDevicesInGroup(groupId);
+    }
+
+    @Override
+    public boolean addDeviceToGroup(DeviceIdentifier deviceId, int groupId) throws GroupManagementException {
+        return DeviceMgtGroupDataHolder.getInstance().getGroupManagementServiceProvider().addDeviceToGroup(deviceId, groupId);
     }
 }

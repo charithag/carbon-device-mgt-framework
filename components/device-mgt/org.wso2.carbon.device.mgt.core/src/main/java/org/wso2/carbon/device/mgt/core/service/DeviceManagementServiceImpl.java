@@ -92,7 +92,7 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     }
 
     @Override
-    public org.wso2.carbon.device.mgt.common.Device getDevice(DeviceIdentifier deviceId)
+    public Device getDevice(DeviceIdentifier deviceId)
             throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider().getDevice(deviceId);
     }
@@ -221,6 +221,11 @@ public class DeviceManagementServiceImpl implements DeviceManagementService {
     public List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementException {
         return DeviceManagementDataHolder.getInstance().getDeviceManagementProvider()
                                     .getDevicesByName(deviceName, tenantId);
+    }
+
+    @Override
+    public List<Device> getDevicesByGroup(int groupId) throws DeviceManagementException {
+        return null;
     }
 
 }
