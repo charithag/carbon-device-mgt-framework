@@ -20,7 +20,6 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.Profile;
 import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
@@ -279,7 +278,7 @@ public class ProfileDAOImpl implements ProfileDAO {
             return PolicyManagementDAOFactory.getConnection();
         } catch (PolicyManagerDAOException e) {
             throw new ProfileManagerDAOException("Error occurred while obtaining a connection from the policy " +
-                    "management metadata repository datasource", e);
+                    "management metadata repository config.datasource", e);
         }
     }
 

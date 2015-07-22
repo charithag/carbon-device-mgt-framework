@@ -33,8 +33,8 @@ import java.util.List;
 
 public class OperationManagementDAOFactory {
 
-    private static DataSource dataSource;
     private static final Log log = LogFactory.getLog(OperationManagementDAOFactory.class);
+    private static DataSource dataSource;
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static OperationDAO getCommandOperationDAO() {
@@ -47,6 +47,10 @@ public class OperationManagementDAOFactory {
 
     public static OperationDAO getProfileOperationDAO() {
         return new ProfileOperationDAOImpl();
+    }
+
+    public static OperationDAO getPolicyOperationDAO() {
+        return new PolicyOperationDAOImpl();
     }
 
     public static OperationMappingDAO getOperationMappingDAO() {
@@ -70,7 +74,7 @@ public class OperationManagementDAOFactory {
         try {
             currentConnection.set(dataSource.getConnection());
         } catch (SQLException e) {
-            throw new OperationManagementDAOException("Error occurred while retrieving datasource connection", e);
+            throw new OperationManagementDAOException("Error occurred while retrieving config.datasource connection", e);
         }
     }
 
@@ -90,12 +94,14 @@ public class OperationManagementDAOFactory {
     public static void closeConnection() throws OperationManagementDAOException {
 
         Connection con = currentConnection.get();
-        try {
-            con.close();
-        } catch (SQLException e) {
-            log.error("Error occurred while close the connection");
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                log.error("Error occurred while close the connection");
+            }
+            currentConnection.remove();
         }
-        currentConnection.remove();
     }
 
     public static void commitTransaction() throws OperationManagementDAOException {
@@ -167,10 +173,6 @@ public class OperationManagementDAOFactory {
                         DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), null);
             }
         }
-        return dataSource;
-    }
-
-    public static DataSource getDataSource() {
         return dataSource;
     }
 

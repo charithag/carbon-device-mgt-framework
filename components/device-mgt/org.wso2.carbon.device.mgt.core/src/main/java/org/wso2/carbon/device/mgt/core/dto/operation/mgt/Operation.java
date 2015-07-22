@@ -18,21 +18,10 @@
  */
 package org.wso2.carbon.device.mgt.core.dto.operation.mgt;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Properties;
 
-@XmlRootElement
 public class Operation implements Serializable {
-
-	public enum Type {
-		CONFIG, MESSAGE, INFO, COMMAND, PROFILE
-	}
-
-    public enum Status {
-        IN_PROGRESS, PENDING, COMPLETED, ERROR
-    }
 
     private String code;
     private Properties properties;
@@ -43,8 +32,8 @@ public class Operation implements Serializable {
     private String createdTimeStamp;
     private boolean isEnabled;
     private Object payLoad;
+    private Object operationResponse;
 
-    @XmlElement
     public String getCode() {
         return code;
     }
@@ -53,7 +42,6 @@ public class Operation implements Serializable {
         this.code = code;
     }
 
-    @XmlElement
     public Properties getProperties() {
         return properties;
     }
@@ -62,7 +50,6 @@ public class Operation implements Serializable {
         this.properties = properties;
     }
 
-    @XmlElement
     public Type getType() {
         return type;
     }
@@ -119,5 +106,20 @@ public class Operation implements Serializable {
         this.payLoad = payLoad;
     }
 
+    public Object getOperationResponse() {
+        return operationResponse;
+    }
+
+    public void setOperationResponse(Object operationResponse) {
+        this.operationResponse = operationResponse;
+    }
+
+    public enum Type {
+        CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY
+    }
+
+    public enum Status {
+        IN_PROGRESS, PENDING, COMPLETED, ERROR
+    }
 
 }

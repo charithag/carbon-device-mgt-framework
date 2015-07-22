@@ -20,10 +20,10 @@ package org.wso2.carbon.policy.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
+import org.wso2.carbon.policy.mgt.core.dao.impl.MonitoringDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.PolicyDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.impl.ProfileDAOImpl;
 import org.wso2.carbon.policy.mgt.core.dao.util.PolicyManagementDAOUtil;
@@ -36,8 +36,8 @@ import java.util.List;
 
 public class PolicyManagementDAOFactory {
 
-    private static DataSource dataSource;
     private static final Log log = LogFactory.getLog(PolicyManagementDAOFactory.class);
+    private static DataSource dataSource;
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static void init(DataSourceConfig config) {
@@ -65,6 +65,10 @@ public class PolicyManagementDAOFactory {
 
     public static FeatureDAO getFeatureDAO() {
         return new FeatureDAOImpl();
+    }
+
+    public static MonitoringDAO getMonitoringDAO() {
+        return new MonitoringDAOImpl();
     }
 
     /**
@@ -107,7 +111,7 @@ public class PolicyManagementDAOFactory {
             conn.setAutoCommit(false);
             currentConnection.set(conn);
         } catch (SQLException e) {
-            throw new PolicyManagerDAOException("Error occurred while retrieving datasource connection", e);
+            throw new PolicyManagerDAOException("Error occurred while retrieving config.datasource connection", e);
         }
     }
 

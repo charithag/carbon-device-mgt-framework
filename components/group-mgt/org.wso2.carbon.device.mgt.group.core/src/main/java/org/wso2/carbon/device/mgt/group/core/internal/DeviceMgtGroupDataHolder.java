@@ -18,20 +18,18 @@
  */
 package org.wso2.carbon.device.mgt.group.core.internal;
 
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.group.core.providers.GroupManagementServiceProvider;
-import org.wso2.carbon.device.mgt.user.core.UserManager;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
 public class DeviceMgtGroupDataHolder {
 
+    private static DeviceMgtGroupDataHolder thisInstance = new DeviceMgtGroupDataHolder();
     private RealmService realmService;
     private TenantManager tenantManager;
-    private static DeviceMgtGroupDataHolder thisInstance = new DeviceMgtGroupDataHolder();
-    private UserManager userManager;
     private GroupManagementServiceProvider groupManagementServiceProvider;
-    private DeviceManagementService deviceManagementService;
+    private DeviceManagementProviderService deviceManagementService;
 
     private DeviceMgtGroupDataHolder() {
     }
@@ -60,14 +58,6 @@ public class DeviceMgtGroupDataHolder {
         this.setTenantManager(realmService);
     }
 
-    public UserManager getUserManager() {
-        return userManager;
-    }
-
-    public void setUserManager(UserManager userManager) {
-        this.userManager = userManager;
-    }
-
     public GroupManagementServiceProvider getGroupManagementServiceProvider() {
         return groupManagementServiceProvider;
     }
@@ -76,11 +66,11 @@ public class DeviceMgtGroupDataHolder {
         this.groupManagementServiceProvider = groupManagementServiceProvider;
     }
 
-    public DeviceManagementService getDeviceManagementService() {
+    public DeviceManagementProviderService getDeviceManagementService() {
         return deviceManagementService;
     }
 
-    public void setDeviceManagementService(DeviceManagementService deviceManagementService) {
+    public void setDeviceManagementProviderService(DeviceManagementProviderService deviceManagementService) {
         this.deviceManagementService = deviceManagementService;
     }
 }

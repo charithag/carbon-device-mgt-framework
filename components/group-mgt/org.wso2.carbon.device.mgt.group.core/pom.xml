@@ -16,8 +16,8 @@
 ~ specific language governing permissions and limitations
 ~ under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>group-mgt</artifactId>
@@ -54,8 +54,6 @@
                         <Private-Package>org.wso2.carbon.device.mgt.group.core.internal</Private-Package>
                         <Import-Package>
                             org.wso2.carbon.device.mgt.group.common.*,
-                            org.wso2.carbon.device.mgt.user.common.*,
-                            org.wso2.carbon.device.mgt.user.core.*,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.device.mgt.core.*,
                             org.wso2.carbon.user.core.*,
@@ -89,14 +87,6 @@
         <dependency>
             <groupId>org.wso2.carbon.devicemgt</groupId>
             <artifactId>org.wso2.carbon.device.mgt.group.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.user.common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.devicemgt</groupId>
-            <artifactId>org.wso2.carbon.device.mgt.user.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>

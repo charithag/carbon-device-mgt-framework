@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
-import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.service.EmailService;
@@ -47,26 +46,18 @@ import java.util.concurrent.TimeUnit;
 
 public class EmailServiceProviderImpl implements EmailService {
 
-    private static ThreadPoolExecutor threadPoolExecutor;
     private static final String EMAIL_URI_SCHEME = "mailto:";
-
+    private static ThreadPoolExecutor threadPoolExecutor;
     private static Log log = LogFactory.getLog(EmailServiceProviderImpl.class);
 
-    public EmailServiceProviderImpl() {
-        init();
-    }
+    static {
+        EmailConfigurations emailConfig =
+                DeviceConfigurationManager.getInstance().getDeviceManagementConfig().
+                        getDeviceManagementConfigRepository().getEmailConfigurations();
 
-    private void init() {
-        if (threadPoolExecutor == null) {
-            DeviceManagementConfig config = DeviceConfigurationManager.getInstance().getDeviceManagementConfig();
-            EmailConfigurations emailConfigurations = config.getDeviceManagementConfigRepository()
-                    .getEmailConfigurations();
-
-
-            threadPoolExecutor = new ThreadPoolExecutor(emailConfigurations.getMinNumOfThread(),
-                    emailConfigurations.getMaxNumOfThread(), emailConfigurations.getKeepAliveTime(),TimeUnit.SECONDS,
-                    new LinkedBlockingQueue<Runnable>(emailConfigurations.getThreadQueueCapacity()));
-        }
+        threadPoolExecutor = new ThreadPoolExecutor(emailConfig.getMinNumOfThread(),
+                emailConfig.getMaxNumOfThread(), emailConfig.getKeepAliveTime(), TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(emailConfig.getThreadQueueCapacity()));
     }
 
     @Override
@@ -78,7 +69,7 @@ public class EmailServiceProviderImpl implements EmailService {
         }
     }
 
-    class EmailSender implements Runnable {
+    public static class EmailSender implements Runnable {
 
         String to;
         String subject;

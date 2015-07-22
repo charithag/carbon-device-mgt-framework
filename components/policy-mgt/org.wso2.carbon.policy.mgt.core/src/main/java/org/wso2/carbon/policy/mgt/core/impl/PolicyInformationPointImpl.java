@@ -24,9 +24,9 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
 import org.wso2.carbon.device.mgt.common.Feature;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
@@ -46,7 +46,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
 
     PolicyManager policyManager;
     FeatureManager featureManager;
-    DeviceManagementService deviceManagementService;
+    DeviceManagementProviderService deviceManagementService;
 
     public PolicyInformationPointImpl() {
         deviceManagementService =
@@ -71,6 +71,8 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
             pipDevice.setRoles(getRoleOfDevice(device));
             pipDevice.setDeviceType(deviceType);
             pipDevice.setDeviceIdentifier(deviceIdentifier);
+            pipDevice.setUserId(device.getEnrolmentInfo().getOwner());
+            pipDevice.setOwnershipType(device.getEnrolmentInfo().getOwnership().toString());
 
             // TODO : Find a way to retrieve the timestamp and location (lat, long) of the device
             // pipDevice.setLongitude();
@@ -90,9 +92,19 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
 
         List<Policy> policies = policyManager.getPoliciesOfDeviceType(pipDevice.getDeviceType().getName());
         PolicyFilter policyFilter = new PolicyFilterImpl();
-        policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
-        policyFilter.filterOwnershipTypeBasedPolicies(pipDevice.getOwnershipType(), policies);
-        policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
+
+        if (pipDevice.getDeviceType() != null) {
+            policies = policyFilter.filterDeviceTypeBasedPolicies(pipDevice.getDeviceType().getName(), policies);
+        }
+        if (pipDevice.getOwnershipType() != null && !pipDevice.getOwnershipType().isEmpty()) {
+            policies = policyFilter.filterOwnershipTypeBasedPolicies(pipDevice.getOwnershipType(), policies);
+        }
+        if (pipDevice.getRoles() != null) {
+            policies = policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
+        }
+        if (pipDevice.getUserId() != null && !pipDevice.getUserId().isEmpty()) {
+            policies = policyFilter.filterUserBasedPolicies(pipDevice.getUserId(), policies);
+        }
 
         return policies;
     }
@@ -106,7 +118,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
     private String[] getRoleOfDevice(Device device) throws PolicyManagementException {
         try {
             return CarbonContext.getThreadLocalCarbonContext().getUserRealm().
-                    getUserStoreManager().getRoleListOfUser(device.getOwner());
+                    getUserStoreManager().getRoleListOfUser(device.getEnrolmentInfo().getOwner());
         } catch (UserStoreException e) {
             String msg = "Error occurred when retrieving roles related to user name.";
             log.error(msg, e);
@@ -131,7 +143,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         return finalPolicies;
     }
 
-    private DeviceManagementService getDeviceManagementService() {
+    private DeviceManagementProviderService getDeviceManagementService() {
         return PolicyManagementDataHolder.getInstance().getDeviceManagementService();
     }
 

@@ -17,101 +17,78 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement
 public class Device {
 
 	private int id;
-	private String type;
+    private String name;
+    private String type;
 	private String description;
-	private String name;
-	private Long dateOfEnrolment;
-	private Long dateOfLastUpdate;
-	private String ownership;
-	private boolean status;
-	private int deviceTypeId;
 	private String deviceIdentifier;
-	private String owner;
-	private List<Feature> features;
-	private List<Device.Property> properties;
 	private int groupId;
+    private EnrolmentInfo enrolmentInfo;
+    private List<Feature> features;
+    private List<Device.Property> properties;
 
-	@XmlElement
-	public int getId() {
-		return id;
-	}
+    public Device() {
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public Device(String name, String type, String description, String deviceId, EnrolmentInfo enrolmentInfo,
+                  List<Feature> features, List<Property> properties) {
+        this.name = name;
+        this.type = type;
+        this.description = description;
+        this.deviceIdentifier = deviceId;
+        this.enrolmentInfo = enrolmentInfo;
+        this.features = features;
+        this.properties = properties;
+    }
 
-	@XmlElement
-	public String getDescription() {
-		return description;
-	}
+    public Device(String name, String type, String description, String deviceId, int groupId, EnrolmentInfo enrolmentInfo,
+                  List<Feature> features, List<Property> properties) {
+        this.name = name;
+        this.type = type;
+        this.description = description;
+        this.deviceIdentifier = deviceId;
+        this.groupId = groupId;
+        this.enrolmentInfo = enrolmentInfo;
+        this.features = features;
+        this.properties = properties;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public int getId() {
+        return id;
+    }
 
-	@XmlElement
-	public String getName() {
-		return name;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@XmlElement
-	public Long getDateOfEnrolment() {
-		return dateOfEnrolment;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setDateOfEnrolment(Long dateOfEnrolment) {
-		this.dateOfEnrolment = dateOfEnrolment;
-	}
+    public String getType() {
+        return type;
+    }
 
-	@XmlElement
-	public Long getDateOfLastUpdate() {
-		return dateOfLastUpdate;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setDateOfLastUpdate(Long dateOfLastUpdate) {
-		this.dateOfLastUpdate = dateOfLastUpdate;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	@XmlElement
-	public String getOwnership() {
-		return ownership;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setOwnership(String ownership) {
-		this.ownership = ownership;
-	}
-
-	@XmlElement
-	public boolean isStatus() {
-		return status;
-	}
-
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
-
-	@XmlElement
-	public int getDeviceTypeId() {
-		return deviceTypeId;
-	}
-
-	public void setDeviceTypeId(int deviceTypeId) {
-		this.deviceTypeId = deviceTypeId;
-	}
-
-	@XmlElement
 	public String getDeviceIdentifier() {
 		return deviceIdentifier;
 	}
@@ -120,16 +97,14 @@ public class Device {
 		this.deviceIdentifier = deviceIdentifier;
 	}
 
-	@XmlElement
-	public String getOwner() {
-		return owner;
-	}
+    public EnrolmentInfo getEnrolmentInfo() {
+        return enrolmentInfo;
+    }
 
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
+    public void setEnrolmentInfo(EnrolmentInfo enrolmentInfo) {
+        this.enrolmentInfo = enrolmentInfo;
+    }
 
-	@XmlElement
 	public List<Feature> getFeatures() {
 		return features;
 	}
@@ -138,16 +113,6 @@ public class Device {
 		this.features = features;
 	}
 
-	@XmlElement
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	@XmlElement
 	public List<Device.Property> getProperties() {
 		return properties;
 	}
@@ -156,7 +121,6 @@ public class Device {
 		this.properties = properties;
 	}
 
-	@XmlElement
 	public int getGroupId() {
 		return groupId;
 	}
@@ -164,6 +128,21 @@ public class Device {
 	public void setGroupId(int groupId) {
 		this.groupId = groupId;
 	}
+
+    @Override
+    public String toString() {
+        return "Device[" +
+                "name=" + name + ";" +
+                "type=" + type + ";" +
+                "description=" + description + ";" +
+                "identifier=" + deviceIdentifier + ";" +
+//                "EnrolmentInfo[" +
+//                "owner=" + enrolmentInfo.getOwner() + ";" +
+//                "ownership=" + enrolmentInfo.getOwnership() + ";" +
+//                "status=" + enrolmentInfo.getStatus() + ";" +
+//                "]" +
+                "]";
+    }
 
 	public static class Property {
 

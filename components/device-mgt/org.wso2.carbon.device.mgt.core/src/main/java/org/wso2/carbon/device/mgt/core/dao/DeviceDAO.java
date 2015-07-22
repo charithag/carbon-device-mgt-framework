@@ -18,9 +18,10 @@
 
 package org.wso2.carbon.device.mgt.core.dao;
 
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.core.dto.Device;
-import org.wso2.carbon.device.mgt.core.dto.Status;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
 
 import java.util.List;
 
@@ -29,59 +30,37 @@ import java.util.List;
  */
 public interface DeviceDAO {
 
-    void addDevice(Device device) throws DeviceManagementDAOException;
+    int addDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException;
 
-    void updateDevice(Device device) throws DeviceManagementDAOException;
+    int updateDevice(int typeId, Device device, int tenantId) throws DeviceManagementDAOException;
 
-    void updateDeviceStatus(int deviceId, Status status) throws DeviceManagementDAOException;
+    int removeDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
 
-    void deleteDevice(int deviceId) throws DeviceManagementDAOException;
+    Device getDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException;
 
-    Device getDevice(int deviceId) throws DeviceManagementDAOException;
+    List<Device> getDevices(int tenantId) throws DeviceManagementDAOException;
 
-    Device getDevice(DeviceIdentifier deviceIdentifier) throws DeviceManagementDAOException;
+    List<Device> getDevices(String type, int tenantId) throws DeviceManagementDAOException;
 
-    List<Device> getDevices() throws DeviceManagementDAOException;
+    List<Device> getDevicesOfUser(String username, int tenantId) throws DeviceManagementDAOException;
 
-    List<Integer> getDeviceIds(List<DeviceIdentifier> devices) throws DeviceManagementDAOException;
+    List<Device> getDevicesOfGroup(int groupId, int tenantId) throws DeviceManagementDAOException;
 
-    /**
-     * @param type - The device type id.
-     * @return a list of devices based on the type id.
-     * @throws DeviceManagementDAOException
-     */
-    List<Device> getDevices(int type) throws DeviceManagementDAOException;
+    int getDeviceCount(int tenantId) throws DeviceManagementDAOException;
 
-    /**
-     * @param groupId - The group id.
-     * @return a list of devices in specified group
-     * @throws DeviceManagementDAOException
-     */
-    List<Device> getDevicesByGroup(int groupId, int tenantId) throws DeviceManagementDAOException;
-
-    /**
-     * Get the list of devices belongs to a user.
-     *
-     * @param username Requested user.
-     * @return List of devices of the user.
-     * @throws DeviceManagementDAOException
-     */
-    List<Device> getDeviceListOfUser(String username, int tenantId) throws DeviceManagementDAOException;
-
-    /**
-     * Get the count of devices
-     *
-     * @return device count
-     * @throws DeviceManagementDAOException
-     */
-    int getDeviceCount() throws DeviceManagementDAOException;
-
-    /**
-     * Get the list of devices that matches with the given device name.
-     *
-     * @param deviceName Name of the device
-     * @return List of devices that matches with the given device name.
-     * @throws DeviceManagementDAOException
-     */
     List<Device> getDevicesByName(String deviceName, int tenantId) throws DeviceManagementDAOException;
+
+    int addEnrollment(Device device, int tenantId) throws DeviceManagementDAOException;
+
+    boolean setEnrolmentStatus(DeviceIdentifier deviceId, String currentOwner, Status status,
+                               int tenantId) throws DeviceManagementDAOException;
+
+    Status getEnrolmentStatus(DeviceIdentifier deviceId, String currentOwner,
+                              int tenantId) throws DeviceManagementDAOException;
+
+    EnrolmentInfo getEnrolment(DeviceIdentifier deviceId, String currentUser,
+                               int tenantId) throws DeviceManagementDAOException;
+
+    List<Device> getDevicesByStatus(EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException;
 }
+

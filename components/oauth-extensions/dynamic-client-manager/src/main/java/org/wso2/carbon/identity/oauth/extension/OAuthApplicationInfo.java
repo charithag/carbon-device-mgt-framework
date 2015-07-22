@@ -27,24 +27,16 @@ import java.util.Map;
 
 public class OAuthApplicationInfo {
 
-
     private String clientId;
     private String clientName;
     private String callBackURL;
     private String clientSecret;
     private Map<String,Object> parameters = new HashMap<String, Object>();
 
-    /**
-     * get client Id (consumer id)
-     * @return clientId
-     */
     public String getClientId() {
         return clientId;
     }
-    /**
-     * set client Id
-     * @param clientId
-     */
+
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
@@ -57,22 +49,6 @@ public class OAuthApplicationInfo {
         this.clientSecret = clientSecret;
     }
 
-    /**
-     * Set client Name of OAuthApplication.
-     * @param clientName
-     */
-    public void setClientName(String clientName){
-        this.clientName = clientName;
-    }
-
-    /**
-     * Set callback URL of OAuthapplication.
-     * @param callBackURL
-     */
-    public void setCallBackURL(String callBackURL){
-        this.callBackURL = callBackURL;
-    }
-
     public void addParameter(String name,Object value){
         parameters.put(name,value);
     }
@@ -82,17 +58,23 @@ public class OAuthApplicationInfo {
     }
 
     public String getJsonString(){
-
         return JSONObject.toJSONString(parameters);
-
     }
 
     public String getClientName(){
         return clientName;
     }
 
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+
     public String getCallBackURL(){
         return callBackURL;
+    }
+
+    public void setCallBackURL(String callBackURL) {
+        this.callBackURL = callBackURL;
     }
 
     public void putAll(Map<String,Object> parameters){

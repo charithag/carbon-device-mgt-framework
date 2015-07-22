@@ -12,45 +12,16 @@ import org.wso2.carbon.device.mgt.group.core.dao.GroupDAO;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOException;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.group.core.internal.DeviceMgtGroupDataHolder;
-import org.wso2.carbon.device.mgt.user.common.User;
-import org.wso2.carbon.user.api.AuthorizationManager;
-import org.wso2.carbon.user.api.Claim;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.Permission;
-import org.wso2.carbon.user.core.UserCoreConstants;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GroupManagementServiceProviderImpl implements GroupManagementServiceProvider {
 
     private static Log log = LogFactory.getLog(GroupManagementServiceProviderImpl.class);
-
-    public static final String GIVEN_NAME = UserCoreConstants.ClaimTypeURIs.GIVEN_NAME;
-    public static final String EMAIL_ADDRESS = UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS;
-    public static final String SURNAME = UserCoreConstants.ClaimTypeURIs.SURNAME;
-    public static final String STREET_ADDRESS = UserCoreConstants.ClaimTypeURIs.STREET_ADDRESS;
-    public static final String LOCALITY = UserCoreConstants.ClaimTypeURIs.LOCALITY;
-    public static final String REGION = UserCoreConstants.ClaimTypeURIs.REGION;
-    public static final String POSTAL_CODE = UserCoreConstants.ClaimTypeURIs.POSTAL_CODE;
-    public static final String COUNTRY = UserCoreConstants.ClaimTypeURIs.COUNTRY;
-    public static final String HONE = UserCoreConstants.ClaimTypeURIs.HONE;
-    public static final String IM = UserCoreConstants.ClaimTypeURIs.IM;
-    public static final String ORGANIZATION = UserCoreConstants.ClaimTypeURIs.ORGANIZATION;
-    public static final String URL = UserCoreConstants.ClaimTypeURIs.URL;
-    public static final String TITLE = UserCoreConstants.ClaimTypeURIs.TITLE;
-    public static final String ROLE = UserCoreConstants.ClaimTypeURIs.ROLE;
-    public static final String MOBILE = UserCoreConstants.ClaimTypeURIs.MOBILE;
-    public static final String NICKNAME = UserCoreConstants.ClaimTypeURIs.NICKNAME;
-    public static final String DATE_OF_BIRTH = UserCoreConstants.ClaimTypeURIs.DATE_OF_BIRTH;
-    public static final String GENDER = UserCoreConstants.ClaimTypeURIs.GENDER;
-    public static final String ACCOUNT_STATUS = UserCoreConstants.ClaimTypeURIs.ACCOUNT_STATUS;
-    public static final String CHALLENGE_QUESTION_URI = UserCoreConstants.ClaimTypeURIs.CHALLENGE_QUESTION_URI;
-    public static final String IDENTITY_CLAIM_URI = UserCoreConstants.ClaimTypeURIs.IDENTITY_CLAIM_URI;
-    public static final String TEMPORARY_EMAIL_ADDRESS = UserCoreConstants.ClaimTypeURIs.TEMPORARY_EMAIL_ADDRESS;
 
     private GroupDAO groupDAO;
 
@@ -307,47 +278,19 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     }
 
     @Override
-    public List<User> getUsersForGroup(int groupId) throws GroupManagementException {
+    public String[] getUsersForGroup(int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
         String[] userNames;
-        ArrayList usersList = new ArrayList();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             userNames = userStoreManager.getUserListOfRole("Internal/groups/" + groupId + "/*");
-            User newUser;
-            for (String userName : userNames) {
-                newUser = new User(userName);
-                Claim[] claims = userStoreManager.getUserClaimValues(userName, null);
-                Map<String, String> claimMap = new HashMap<String, String>();
-                for (Claim claim : claims) {
-                    String claimURI = claim.getClaimUri();
-                    String value = claim.getValue();
-                    claimMap.put(claimURI, value);
-                }
-                setUserClaims(newUser, claimMap);
-                usersList.add(newUser);
-            }
+            return userNames;
         } catch (UserStoreException userStoreEx) {
             String errorMsg = "User store error in fetching user list for group id:" + groupId;
             log.error(errorMsg, userStoreEx);
             throw new GroupManagementException(errorMsg, userStoreEx);
-        }
-        return usersList;
-    }
-
-    @Override
-    public String[] getPermissionsForGroupRole(int groupId, String sharingRole) throws GroupManagementException {
-        AuthorizationManager authorizationManager;
-        String[] permissions;
-        try {
-            int tenantId = DeviceManagerUtil.getTenantId();
-            authorizationManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId).getAuthorizationManager();
-            authorizationManager.authorizeRole("Internal/groups/" + groupId + "/" + sharingRole, "Device Grouping", "Create Group");
-            throw new GroupManagementException("Method not implemented", new Exception());
-        } catch (UserStoreException e) {
-            throw new GroupManagementException("Error occurred while getting user store manager", e);
         }
     }
 
@@ -355,7 +298,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     public List<Device> getAllDevicesInGroup(int groupId) throws GroupManagementException {
         List<Device> devicesInGroup;
         try {
-            devicesInGroup = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getDevicesByGroup(groupId);
+            devicesInGroup = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getDevicesOfGroup(groupId);
             return devicesInGroup;
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while getting devices in group", e);
@@ -378,30 +321,5 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             e.printStackTrace();
         }
         return false;
-    }
-
-    private void setUserClaims(User newUser, Map<String, String> claimMap) {
-        newUser.setRoleName(UserCoreConstants.ClaimTypeURIs.ROLE);
-        newUser.setAccountStatus(claimMap.get(ACCOUNT_STATUS));
-        newUser.setChallengeQuestion(claimMap.get(CHALLENGE_QUESTION_URI));
-        newUser.setCountry(claimMap.get(COUNTRY));
-        newUser.setDateOfBirth(claimMap.get(DATE_OF_BIRTH));
-        newUser.setEmail(claimMap.get(EMAIL_ADDRESS));
-        newUser.setFirstName(claimMap.get(GIVEN_NAME));
-        newUser.setGender(claimMap.get(GENDER));
-        newUser.setHone(claimMap.get(HONE));
-        newUser.setIm(claimMap.get(IM));
-        newUser.setIdentityClaimUri(claimMap.get(IDENTITY_CLAIM_URI));
-        newUser.setLastName(claimMap.get(SURNAME));
-        newUser.setLocality(claimMap.get(LOCALITY));
-        newUser.setEmail(claimMap.get(EMAIL_ADDRESS));
-        newUser.setMobile(claimMap.get(MOBILE));
-        newUser.setNickName(claimMap.get(NICKNAME));
-        newUser.setOrganization(claimMap.get(ORGANIZATION));
-        newUser.setPostalCode(claimMap.get(POSTAL_CODE));
-        newUser.setRegion(claimMap.get(REGION));
-        newUser.setStreatAddress(claimMap.get(STREET_ADDRESS));
-        newUser.setTitle(claimMap.get(TITLE));
-        newUser.setTempEmailAddress(claimMap.get(TEMPORARY_EMAIL_ADDRESS));
     }
 }

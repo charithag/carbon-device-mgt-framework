@@ -24,13 +24,12 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
 import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.group.core.providers.GroupManagementServiceProvider;
 import org.wso2.carbon.device.mgt.group.core.providers.GroupManagementServiceProviderImpl;
 import org.wso2.carbon.device.mgt.group.core.service.GroupManagementService;
 import org.wso2.carbon.device.mgt.group.core.service.GroupManagementServiceImpl;
-import org.wso2.carbon.device.mgt.user.core.UserManager;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -42,17 +41,11 @@ import org.wso2.carbon.user.core.service.RealmService;
  * bind="setRealmService"
  * unbind="unsetRealmService"
  * @scr.reference name="org.wso2.carbon.device.manager"
- * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementService"
+ * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
  * cardinality="1..1"
  * policy="dynamic"
- * bind="setDeviceManagementService"
- * unbind="unsetDeviceManagementService"
- * @scr.reference name="org.wso2.carbon.device.mgt.user.core.usermanager"
- * interface="org.wso2.carbon.device.mgt.user.core.UserManager"
- * cardinality="1..1
- * policy="dynamic"
- * bind="setUserManager"
- * unbind="unsetUserManager"
+ * bind="setDeviceManagementProviderService"
+ * unbind="unsetDeviceManagementProviderService"
  */
 
 public class DeviceMgtGroupServiceComponent {
@@ -110,51 +103,27 @@ public class DeviceMgtGroupServiceComponent {
     }
 
     /**
-     * Sets GroupManagementService.
+     * Sets DeviceManagementProviderService.
      *
      * @param deviceMgtService An instance of GroupManagementService
      */
-    protected void setDeviceManagementService(DeviceManagementService deviceMgtService) {
+    protected void setDeviceManagementProviderService(DeviceManagementProviderService deviceMgtService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting DeviceManager Service");
         }
-        DeviceMgtGroupDataHolder.getInstance().setDeviceManagementService(deviceMgtService);
+        DeviceMgtGroupDataHolder.getInstance().setDeviceManagementProviderService(deviceMgtService);
     }
 
     /**
-     * Unsets GroupManagementService.
+     * Unsets DeviceManagementProviderService.
      *
      * @param deviceMgtService An instance of UserManager
      */
-    protected void unsetDeviceManagementService(DeviceManagementService deviceMgtService) {
+    protected void unsetDeviceManagementProviderService(DeviceManagementProviderService deviceMgtService) {
         if (log.isDebugEnabled()) {
             log.debug("Unsetting DeviceManager Service");
         }
-        DeviceMgtGroupDataHolder.getInstance().setDeviceManagementService(null);
-    }
-
-    /**
-     * Sets UserManager Service.
-     *
-     * @param userMgtService An instance of UserManager
-     */
-    protected void setUserManager(UserManager userMgtService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Setting UserManager Service");
-        }
-        DeviceMgtGroupDataHolder.getInstance().setUserManager(userMgtService);
-    }
-
-    /**
-     * Unsets UserManager Service.
-     *
-     * @param userMgtService An instance of UserManager
-     */
-    protected void unsetUserManager(UserManager userMgtService) {
-        if (log.isDebugEnabled()) {
-            log.debug("Unsetting UserManager Service");
-        }
-        DeviceMgtGroupDataHolder.getInstance().setUserManager(null);
+        DeviceMgtGroupDataHolder.getInstance().setDeviceManagementProviderService(null);
     }
 
 }

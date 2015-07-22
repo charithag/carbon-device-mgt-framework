@@ -24,7 +24,6 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Map;
 
 //TODO :
@@ -36,12 +35,11 @@ public class PIPDevice {
     private DeviceType deviceType;
     private DeviceIdentifier deviceIdentifier;
     private String ownershipType;
-    private List<String> userIds;
+    private String userId;
     private String roles[];
-    private String altitude;
+    private String latitude;
     private String longitude;
     private Timestamp timestamp;
-    private int groupId;
 
     public Device getDevice() {
         return device;
@@ -67,12 +65,12 @@ public class PIPDevice {
         this.ownershipType = ownershipType;
     }
 
-    public List<String> getUserIds() {
-        return userIds;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserIds(List<String> userIds) {
-        this.userIds = userIds;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String[] getRoles() {
@@ -83,12 +81,12 @@ public class PIPDevice {
         this.roles = roles;
     }
 
-    public String getAltitude() {
-        return altitude;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setAltitude(String altitude) {
-        this.altitude = altitude;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getLongitude() {
@@ -121,13 +119,5 @@ public class PIPDevice {
 
     public void setDeviceIdentifier(DeviceIdentifier deviceIdentifier) {
         this.deviceIdentifier = deviceIdentifier;
-    }
-
-    public int getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
     }
 }

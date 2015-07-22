@@ -21,13 +21,7 @@ package org.wso2.carbon.policy.mgt.core.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.Profile;
-import org.wso2.carbon.policy.mgt.common.ProfileManagementException;
+import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
 import org.wso2.carbon.policy.mgt.core.mgt.ProfileManager;
@@ -130,7 +124,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
 
     @Override
     public void setPolicyUsed(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException {
-        policyManager.addAppliedPolicyToDevice(deviceIdentifier, policy.getId(), policy.getProfile().getProfileFeaturesList());
+        policyManager.addAppliedPolicyToDevice(deviceIdentifier, policy);
     }
 
     @Override
@@ -188,7 +182,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
         }
     }
 
-    @Override
+ /*   @Override
     public Feature addFeature(Feature feature) throws FeatureManagementException {
         return featureManager.addFeature(feature);
     }
@@ -197,7 +191,7 @@ public class PolicyAdministratorPointImpl implements PolicyAdministratorPoint {
     public Feature updateFeature(Feature feature) throws FeatureManagementException {
         return featureManager.updateFeature(feature);
 
-    }
+    }*/
 
     @Override
     public boolean deleteFeature(int featureId) throws FeatureManagementException {

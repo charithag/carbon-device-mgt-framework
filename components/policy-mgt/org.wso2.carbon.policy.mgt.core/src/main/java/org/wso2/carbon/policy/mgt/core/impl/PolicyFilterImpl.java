@@ -33,13 +33,14 @@ public class PolicyFilterImpl implements PolicyFilter {
     private static final Log log = LogFactory.getLog(PolicyFilterImpl.class);
 
     @Override
-    public void filterRolesBasedPolicies(String roles[], List<Policy> policies) {
+    public List<Policy> filterRolesBasedPolicies(String roles[], List<Policy> policies) {
 
         List<Policy> temp = new ArrayList<Policy>();
         for (Policy policy : policies) {
 
             List<String> tempRoles = policy.getRoles();
             if (tempRoles.isEmpty()) {
+                temp.add(policy);
                 continue;
             }
             if (PolicyManagementConstants.ANY.equalsIgnoreCase(tempRoles.get(0))) {
@@ -56,32 +57,49 @@ public class PolicyFilterImpl implements PolicyFilter {
                 }
             }
         }
-        policies = temp;
-
+        return temp;
     }
 
     @Override
-    public void filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies) {
+    public List<Policy> filterOwnershipTypeBasedPolicies(String ownershipType, List<Policy> policies) {
 
-//        List<Policy> temp = new ArrayList<Policy>();
-//        for (Policy policy : policies) {
-//            if (ownershipType.equalsIgnoreCase(policy.getOwnershipType())) {
-//                temp.add(policy);
-//            }
-//        }
-//        policies = temp;
+        List<Policy> temp = new ArrayList<Policy>();
+        for (Policy policy : policies) {
+            if (ownershipType.equalsIgnoreCase(policy.getOwnershipType()) ||
+                    PolicyManagementConstants.ANY.equalsIgnoreCase(policy.getOwnershipType())) {
+                temp.add(policy);
+            }
+        }
+        return temp;
     }
 
     @Override
-    public void filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies) {
+    public List<Policy> filterDeviceTypeBasedPolicies(String deviceType, List<Policy> policies) {
         List<Policy> temp = new ArrayList<Policy>();
         for (Policy policy : policies) {
             if (deviceType.equalsIgnoreCase(policy.getProfile().getDeviceType().getName())) {
                 temp.add(policy);
             }
         }
-        policies = temp;
+        return temp;
     }
 
+    @Override
+    public List<Policy> filterUserBasedPolicies(String username, List<Policy> policies) {
+        List<Policy> temp = new ArrayList<Policy>();
 
+        for (Policy policy : policies) {
+            List<String> users = policy.getUsers();
+            if (users.contains(PolicyManagementConstants.ANY)) {
+                temp.add(policy);
+                continue;
+            }
+            for (String user : users) {
+                if (username.equalsIgnoreCase(user)) {
+                    temp.add(policy);
+                }
+            }
+        }
+        return temp;
+    }
 }

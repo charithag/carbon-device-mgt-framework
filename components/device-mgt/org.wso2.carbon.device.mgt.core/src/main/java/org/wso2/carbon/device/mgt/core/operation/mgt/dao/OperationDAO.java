@@ -18,7 +18,6 @@
  */
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao;
 
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 
 import java.util.List;
@@ -40,8 +39,11 @@ public interface OperationDAO {
 
     List<? extends Operation> getOperationsForDevice(int deviceId) throws OperationManagementDAOException;
 
-    List<? extends Operation> getOperationsForStatus(Operation.Status status) throws OperationManagementDAOException;
-
     Operation getNextOperation(int deviceId) throws OperationManagementDAOException;
 
+    void updateOperationStatus(int deviceId, int operationId, Operation.Status status)
+            throws OperationManagementDAOException;
+
+    void addOperationResponse(int deviceId, int operationId, Object operationResponse)
+            throws OperationManagementDAOException;
 }

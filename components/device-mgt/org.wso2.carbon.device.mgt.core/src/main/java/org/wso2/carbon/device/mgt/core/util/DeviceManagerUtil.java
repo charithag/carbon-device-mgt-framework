@@ -48,11 +48,7 @@ import java.util.*;
 public final class DeviceManagerUtil {
 
     private static final Log log = LogFactory.getLog(DeviceManagerUtil.class);
-
-    enum HTTPMethod {
-        GET, POST, DELETE, PUT, OPTIONS
-    }
-
+    public static ThreadLocal<Integer> currentTenant = new ThreadLocal<Integer>();
     private static List<HTTPMethod> httpMethods;
 
     static {
@@ -213,5 +209,10 @@ public final class DeviceManagerUtil {
         }
         return uriTemplates;
     }
+
+    enum HTTPMethod {
+        GET, POST, DELETE, PUT, OPTIONS
+    }
+
 
 }

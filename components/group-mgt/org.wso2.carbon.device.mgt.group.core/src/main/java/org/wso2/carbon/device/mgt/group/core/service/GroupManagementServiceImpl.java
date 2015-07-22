@@ -5,7 +5,6 @@ import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.group.common.Group;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
 import org.wso2.carbon.device.mgt.group.core.internal.DeviceMgtGroupDataHolder;
-import org.wso2.carbon.device.mgt.user.common.User;
 import org.wso2.carbon.user.core.Permission;
 
 import java.util.List;
@@ -78,13 +77,8 @@ public class GroupManagementServiceImpl implements GroupManagementService {
     }
 
     @Override
-    public List<User> getUsersForGroup(int groupId) throws GroupManagementException {
+    public String[] getUsersForGroup(int groupId) throws GroupManagementException {
         return DeviceMgtGroupDataHolder.getInstance().getGroupManagementServiceProvider().getUsersForGroup(groupId);
-    }
-
-    @Override
-    public String[] getPermissionsForGroupRole(int groupId, String sharingRole) throws GroupManagementException {
-        return DeviceMgtGroupDataHolder.getInstance().getGroupManagementServiceProvider().getPermissionsForGroupRole(groupId, sharingRole);
     }
 
     @Override

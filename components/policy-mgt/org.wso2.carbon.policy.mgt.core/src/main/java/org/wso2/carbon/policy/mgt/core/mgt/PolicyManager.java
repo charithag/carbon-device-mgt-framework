@@ -15,11 +15,10 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-
 package org.wso2.carbon.policy.mgt.core.mgt;
 
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
-import org.wso2.carbon.device.mgt.core.dto.Device;
 import org.wso2.carbon.policy.mgt.common.Policy;
 import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
@@ -61,12 +60,16 @@ public interface PolicyManager {
 
     List<Device> getPolicyAppliedDevicesIds(int policyId) throws PolicyManagementException;
 
-    void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, int policyId, List<ProfileFeature> profileFeatures) throws
-            PolicyManagementException;
+    void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, int policyId, List<ProfileFeature>
+            profileFeatures) throws PolicyManagementException;
+
+    void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException;
 
     boolean checkPolicyAvailable(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 
     boolean setPolicyApplied(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 
     int getPolicyCount() throws PolicyManagementException;
+
+    Policy getAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 }

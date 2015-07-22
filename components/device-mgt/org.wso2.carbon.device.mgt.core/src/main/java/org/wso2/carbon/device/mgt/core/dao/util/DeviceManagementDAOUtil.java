@@ -20,11 +20,7 @@ package org.wso2.carbon.device.mgt.core.dao.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
-import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dto.Device;
-import org.wso2.carbon.device.mgt.core.dto.DeviceType;
-import org.wso2.carbon.device.mgt.core.dto.Status;
 import org.wso2.carbon.device.mgt.core.internal.DeviceManagementDataHolder;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.tenant.TenantManager;
@@ -62,6 +58,23 @@ public final class DeviceManagementDAOUtil {
 				conn.close();
 			} catch (SQLException e) {
 				log.warn("Error occurred while closing database connection", e);
+			}
+		}
+	}
+
+	public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
+		if (rs != null) {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				log.warn("Error occurred while closing result set", e);
+			}
+		}
+		if (stmt != null) {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				log.warn("Error occurred while closing prepared statement", e);
 			}
 		}
 	}
@@ -107,57 +120,4 @@ public final class DeviceManagementDAOUtil {
 		}
 	}
 
-	/**
-	 * @param device     - The DTO device object.
-	 * @param deviceType - The DeviceType object associated with the device
-	 * @return A Business Object.
-	 */
-	public static org.wso2.carbon.device.mgt.common.Device convertDevice(Device device,
-	                                                                     DeviceType deviceType) {
-		org.wso2.carbon.device.mgt.common.Device deviceBO =
-				new org.wso2.carbon.device.mgt.common.Device();
-		deviceBO.setDateOfEnrolment(device.getDateOfEnrollment());
-		deviceBO.setDateOfLastUpdate(device.getDateOfLastUpdate());
-		deviceBO.setDescription(device.getDescription());
-		deviceBO.setDeviceIdentifier(device.getDeviceIdentificationId());
-		deviceBO.setDeviceTypeId(device.getDeviceTypeId());
-		deviceBO.setType(deviceType.getName());
-		deviceBO.setName(device.getName());
-		deviceBO.setId(device.getId());
-		deviceBO.setOwner(device.getOwnerId());
-		deviceBO.setOwnership(device.getOwnerShip());
-		if (device.getStatus() == Status.ACTIVE) {
-			deviceBO.setStatus(true);
-		} else if (device.getStatus() == Status.INACTIVE) {
-			deviceBO.setStatus(false);
-		}
-		return deviceBO;
-	}
-
-	public static Device convertDevice(org.wso2.carbon.device.mgt.common.Device
-			                                   device) throws DeviceManagementDAOException {
-		Device deviceBO = new Device();
-		deviceBO.setDescription(device.getDescription());
-		deviceBO.setName(device.getName());
-		deviceBO.setDateOfEnrollment(device.getDateOfEnrolment());
-		deviceBO.setDateOfLastUpdate(device.getDateOfLastUpdate());
-
-		if (!device.isStatus()) {
-			deviceBO.setStatus(Status.INACTIVE);
-		} else {
-			deviceBO.setStatus(Status.ACTIVE);
-		}
-		deviceBO.setOwnerId(device.getOwner());
-		deviceBO.setOwnerShip(device.getOwnership());
-		deviceBO.setTenantId(DeviceManagementDAOUtil.getTenantId());
-		deviceBO.setDeviceIdentificationId(device.getDeviceIdentifier());
-		return deviceBO;
-	}
-
-	public static DeviceIdentifier createDeviceIdentifier(Device device, DeviceType deviceType) {
-		DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-		deviceIdentifier.setType(deviceType.getName());
-		deviceIdentifier.setId(device.getDeviceIdentificationId());
-		return deviceIdentifier;
-	}
 }

@@ -22,11 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
-import org.wso2.carbon.device.mgt.core.dao.impl.DeviceDAOImpl;
-import org.wso2.carbon.device.mgt.core.dao.impl.DeviceTypeDAOImpl;
+import org.wso2.carbon.device.mgt.core.dao.impl.*;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -34,14 +35,27 @@ public class DeviceManagementDAOFactory {
 
 	private static final Log log = LogFactory.getLog(DeviceManagementDAOFactory.class);
 	private static DataSource dataSource;
+    private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
 	public static DeviceDAO getDeviceDAO() {
-		return new DeviceDAOImpl(dataSource);
-	}
+        return new DeviceDAOImpl();
+    }
 
 	public static DeviceTypeDAO getDeviceTypeDAO() {
-		return new DeviceTypeDAOImpl(dataSource);
-	}
+        return new DeviceTypeDAOImpl();
+    }
+
+    public static EnrolmentDAO getEnrollmentDAO() {
+        return new EnrolmentDAOImpl();
+    }
+
+    public static ApplicationDAO getApplicationDAO() {
+        return new ApplicationDAOImpl();
+    }
+
+    public static ApplicationMappingDAO getApplicationMappingDAO() {
+        return new ApplicationMappingDAOImpl();
+    }
 
 	public static void init(DataSourceConfig config) {
 		dataSource = resolveDataSource(config);
@@ -51,8 +65,82 @@ public class DeviceManagementDAOFactory {
 		dataSource = dtSource;
 	}
 
-	/**
-	 * Resolve data source from the data source definition
+    public static void beginTransaction() throws DeviceManagementDAOException {
+        try {
+            Connection conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            currentConnection.set(conn);
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while retrieving config.datasource connection", e);
+        }
+    }
+
+    public static void openConnection() throws DeviceManagementDAOException {
+        try {
+            currentConnection.set(dataSource.getConnection());
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while acquiring config.datasource connection", e);
+        }
+    }
+
+    public static Connection getConnection() throws DeviceManagementDAOException {
+        if (currentConnection.get() == null) {
+            try {
+                currentConnection.set(dataSource.getConnection());
+            } catch (SQLException e) {
+                throw new DeviceManagementDAOException("Error occurred while retrieving data source connection", e);
+            }
+        }
+        return currentConnection.get();
+    }
+
+    public static void closeConnection() throws DeviceManagementDAOException {
+        Connection con = currentConnection.get();
+        if (con != null) {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while close the connection");
+            }
+            currentConnection.remove();
+        }
+    }
+
+    public static void commitTransaction() throws DeviceManagementDAOException {
+        try {
+            Connection conn = currentConnection.get();
+            if (conn != null) {
+                conn.commit();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Datasource connection associated with the current thread is null, hence commit " +
+                            "has not been attempted");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while committing the transaction", e);
+        }
+    }
+
+    public static void rollbackTransaction() throws DeviceManagementDAOException {
+        try {
+            Connection conn = currentConnection.get();
+            if (conn != null) {
+                conn.rollback();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Datasource connection associated with the current thread is null, hence rollback " +
+                            "has not been attempted");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while rollbacking the transaction", e);
+        }
+    }
+
+
+    /**
+     * Resolve data source from the data source definition
 	 *
 	 * @param config data source configuration
 	 * @return data source resolved from the data source definition
@@ -84,10 +172,6 @@ public class DeviceManagementDAOFactory {
 						DeviceManagementDAOUtil.lookupDataSource(jndiConfig.getJndiName(), null);
 			}
 		}
-		return dataSource;
-	}
-
-	public static DataSource getDataSource() {
 		return dataSource;
 	}
 

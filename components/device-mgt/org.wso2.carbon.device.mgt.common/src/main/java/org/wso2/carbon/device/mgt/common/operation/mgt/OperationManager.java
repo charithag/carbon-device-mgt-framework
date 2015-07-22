@@ -36,7 +36,7 @@ public interface OperationManager {
      * @throws OperationManagementException If some unusual behaviour is observed while adding the
      * operation
      */
-    public boolean addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException;
+    public int addOperation(Operation operation, List<DeviceIdentifier> devices) throws OperationManagementException;
 
     /**
      * Method to retrieve the list of all operations to a device.
@@ -59,7 +59,7 @@ public interface OperationManager {
 
     public Operation getNextPendingOperation(DeviceIdentifier deviceId) throws OperationManagementException;
 
-    public void updateOperation(int operationId, Operation.Status operationStatus) throws OperationManagementException;
+    public void updateOperation(DeviceIdentifier deviceId, Operation operation) throws OperationManagementException;
 
     public void deleteOperation(int operationId) throws OperationManagementException;
 
@@ -71,5 +71,4 @@ public interface OperationManager {
 
     public Operation getOperation(int operationId) throws OperationManagementException;
 
-    public List<? extends Operation> getOperationsForStatus(Operation.Status status) throws OperationManagementException;
 }

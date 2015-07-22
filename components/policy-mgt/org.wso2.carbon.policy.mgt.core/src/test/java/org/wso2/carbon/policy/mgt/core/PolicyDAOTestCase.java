@@ -15,29 +15,18 @@
 * specific language governing permissions and limitations
 * under the License.
 */
-
 package org.wso2.carbon.policy.mgt.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.w3c.dom.Document;
+import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.device.mgt.core.dao.DeviceDAO;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
-import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
-import org.wso2.carbon.device.mgt.core.dao.DeviceTypeDAO;
-import org.wso2.carbon.device.mgt.core.dto.Device;
+import org.wso2.carbon.device.mgt.core.dao.*;
+import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.policy.mgt.common.*;
-import org.wso2.carbon.policy.mgt.core.common.DBTypes;
-import org.wso2.carbon.policy.mgt.core.common.TestDBConfiguration;
-import org.wso2.carbon.policy.mgt.core.common.TestDBConfigurations;
-import org.wso2.carbon.policy.mgt.core.dao.PolicyManagementDAOFactory;
-import org.wso2.carbon.policy.mgt.core.dao.PolicyManagerDAOException;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
 import org.wso2.carbon.policy.mgt.core.mgt.PolicyManager;
@@ -47,133 +36,43 @@ import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.ProfileManagerImpl;
 import org.wso2.carbon.policy.mgt.core.util.*;
 
-import javax.sql.DataSource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class PolicyDAOTestCase {
-
+public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
     private static final Log log = LogFactory.getLog(PolicyDAOTestCase.class);
-    private static DataSource dataSource;
     private List<Feature> featureList;
+    private List<ProfileFeature> profileFeatureList;
     private Profile profile;
     private Policy policy;
+    private List<Device> devices;
 
     @BeforeClass
-    @Parameters("dbType")
-    public void setUpDB(String dbTypeStr) throws Exception {
-        DBTypes dbType = DBTypes.valueOf(dbTypeStr);
-        TestDBConfiguration dbConfig = getTestDBConfiguration(dbType);
-        PoolProperties properties = new PoolProperties();
-
-        log.info("Database Type : " + dbTypeStr);
-
-        switch (dbType) {
-
-            case MySql:
-
-                log.info("Mysql Called..................................................." + dbTypeStr);
-
-                properties.setUrl(dbConfig.getConnectionUrl());
-                properties.setDriverClassName(dbConfig.getDriverClass());
-                properties.setUsername(dbConfig.getUserName());
-                properties.setPassword(dbConfig.getPwd());
-                dataSource = new org.apache.tomcat.jdbc.pool.DataSource(properties);
-                PolicyManagementDAOFactory.init(dataSource);
-                DeviceManagementDAOFactory.init(dataSource);
-                break;
-
-            case H2:
-
-                properties.setUrl(dbConfig.getConnectionUrl());
-                properties.setDriverClassName(dbConfig.getDriverClass());
-                properties.setUsername(dbConfig.getUserName());
-                properties.setPassword(dbConfig.getPwd());
-                dataSource = new org.apache.tomcat.jdbc.pool.DataSource(properties);
-                this.initH2SQLScript();
-                PolicyManagementDAOFactory.init(dataSource);
-                DeviceManagementDAOFactory.init(dataSource);
-                break;
-
-            default:
-        }
-    }
-
-    private TestDBConfiguration getTestDBConfiguration(DBTypes dbType) throws PolicyManagerDAOException,
-            PolicyManagementException {
-        File deviceMgtConfig = new File("src/test/resources/testdbconfig.xml");
-        Document doc;
-        TestDBConfigurations dbConfigs;
-
-        doc = PolicyManagerUtil.convertToDocument(deviceMgtConfig);
-        JAXBContext testDBContext;
-
-        try {
-            testDBContext = JAXBContext.newInstance(TestDBConfigurations.class);
-            Unmarshaller unmarshaller = testDBContext.createUnmarshaller();
-            dbConfigs = (TestDBConfigurations) unmarshaller.unmarshal(doc);
-        } catch (JAXBException e) {
-            throw new PolicyManagerDAOException("Error parsing test db configurations", e);
-        }
-        for (TestDBConfiguration config : dbConfigs.getDbTypesList()) {
-            if (config.getDbType().equals(dbType.toString())) {
-                return config;
-            }
-        }
-        return null;
-    }
-
-    private void initH2SQLScript() throws Exception {
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            conn = this.getDataSource().getConnection();
-            stmt = conn.createStatement();
-            stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/CreateH2TestDB.sql'");
-        } finally {
-            TestUtils.cleanupResources(conn, stmt, null);
-        }
-    }
-
-    private void initMySQlSQLScript() throws Exception {
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            conn = this.getDataSource().getConnection();
-            stmt = conn.createStatement();
-            stmt.executeUpdate("RUNSCRIPT FROM './src/test/resources/sql/CreateMySqlTestDB.sql'");
-        } finally {
-            TestUtils.cleanupResources(conn, stmt, null);
-        }
-    }
-
-    private DataSource getDataSource() {
-        return dataSource;
+    @Override
+    public void init() throws Exception {
+        initDatSource();
+        System.setProperty("GetTenantIDForTest", "Super");
     }
 
     @Test
     public void addDeviceType() throws DeviceManagementDAOException {
-
         DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
         deviceTypeDAO.addDeviceType(DeviceTypeCreator.getDeviceType());
     }
 
-    @Test(dependsOnMethods = {"addDeviceType"})
+
+    @Test(dependsOnMethods = ("addDeviceType"))
     public void addDevice() throws DeviceManagementDAOException {
 
         DeviceDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        List<Device> devices = DeviceCreator.getDeviceList(DeviceTypeCreator.getDeviceType());
+        EnrolmentDAO enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
+        DeviceType type = DeviceTypeCreator.getDeviceType();
+        devices = DeviceCreator.getDeviceList(type);
         for (Device device : devices) {
-            device.setGroupId(1);
-            deviceTypeDAO.addDevice(device);
+            int id = deviceTypeDAO.addDevice(type.getId(), device, -1234);
+            enrolmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
         }
     }
 
@@ -196,6 +95,7 @@ public class PolicyDAOTestCase {
         ProfileManager profileManager = new ProfileManagerImpl();
         profile = ProfileCreator.getProfile(featureList);
         profileManager.addProfile(profile);
+        profileFeatureList = profile.getProfileFeaturesList();
     }
 
     @Test(dependsOnMethods = ("addProfileFeatures"))
@@ -226,7 +126,7 @@ public class PolicyDAOTestCase {
 
         List<DeviceIdentifier> deviceIdentifierList = new ArrayList<DeviceIdentifier>();
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
-        deviceIdentifier.setId(device.getDeviceIdentificationId());
+        deviceIdentifier.setId(device.getDeviceIdentifier());
         deviceIdentifier.setType("android");
 
         deviceIdentifierList.add(deviceIdentifier);

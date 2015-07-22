@@ -19,33 +19,32 @@
 
 package org.wso2.carbon.device.mgt.core.internal;
 
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManager;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIPublisherService;
-import org.wso2.carbon.device.mgt.common.app.mgt.AppManagerConnector;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.license.LicenseConfig;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
-import org.wso2.carbon.device.mgt.user.core.UserManager;
+import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class DeviceManagementDataHolder {
 
+    private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
     private RealmService realmService;
     private TenantManager tenantManager;
-    private DeviceManagementService deviceManagerProvider;
+    private DeviceManagementProviderService deviceManagerProvider;
     private LicenseManager licenseManager;
     private RegistryService registryService;
     private LicenseConfig licenseConfig;
     private APIPublisherService apiPublisherService;
-	private AppManagerConnector appManager;
-	private AppManagementConfig appManagerConfig;
+    private ApplicationManager appManager;
+    private AppManagementConfig appManagerConfig;
     private OperationManager operationManager;
-    private UserManager userManager;
-
-    private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
+    private ConfigurationContextService configurationContextService;
 
     private DeviceManagementDataHolder() {
     }
@@ -63,6 +62,10 @@ public class DeviceManagementDataHolder {
         this.setTenantManager(realmService);
     }
 
+    public TenantManager getTenantManager() {
+        return tenantManager;
+    }
+
     private void setTenantManager(RealmService realmService) {
         if (realmService == null) {
             throw new IllegalStateException("Realm service is not initialized properly");
@@ -70,15 +73,11 @@ public class DeviceManagementDataHolder {
         this.tenantManager = realmService.getTenantManager();
     }
 
-    public TenantManager getTenantManager() {
-        return tenantManager;
-    }
-
-    public DeviceManagementService getDeviceManagementProvider() {
+    public DeviceManagementProviderService getDeviceManagementProvider() {
         return deviceManagerProvider;
     }
 
-    public void setDeviceManagementProvider(DeviceManagementService deviceManagerProvider) {
+    public void setDeviceManagementProvider(DeviceManagementProviderService deviceManagerProvider) {
         this.deviceManagerProvider = deviceManagerProvider;
     }
 
@@ -114,21 +113,21 @@ public class DeviceManagementDataHolder {
         this.apiPublisherService = apiPublisherService;
     }
 
-	public AppManagerConnector getAppManager() {
-		return appManager;
-	}
+    public ApplicationManager getAppManager() {
+        return appManager;
+    }
 
-	public void setAppManager(AppManagerConnector appManager) {
-		this.appManager = appManager;
-	}
+    public void setAppManager(ApplicationManager appManager) {
+        this.appManager = appManager;
+    }
 
-	public AppManagementConfig getAppManagerConfig() {
-		return appManagerConfig;
-	}
+    public AppManagementConfig getAppManagerConfig() {
+        return appManagerConfig;
+    }
 
-	public void setAppManagerConfig(AppManagementConfig appManagerConfig) {
-		this.appManagerConfig = appManagerConfig;
-	}
+    public void setAppManagerConfig(AppManagementConfig appManagerConfig) {
+        this.appManagerConfig = appManagerConfig;
+    }
 
     public OperationManager getOperationManager() {
         return operationManager;
@@ -138,12 +137,12 @@ public class DeviceManagementDataHolder {
         this.operationManager = operationManager;
     }
 
-
-    public UserManager getUserManager() {
-        return userManager;
+    public ConfigurationContextService getConfigurationContextService() {
+        return configurationContextService;
     }
 
-    public void setUserManager(UserManager userManager) {
-        this.userManager = userManager;
+    public void setConfigurationContextService(ConfigurationContextService configurationContextService) {
+        this.configurationContextService = configurationContextService;
     }
+
 }

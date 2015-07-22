@@ -21,8 +21,10 @@ package org.wso2.carbon.policy.mgt.core.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
+import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerService;
 import org.wso2.carbon.policy.mgt.core.PolicyManagerServiceImpl;
 import org.wso2.carbon.policy.mgt.core.config.PolicyConfigurationManager;
@@ -46,11 +48,23 @@ import org.wso2.carbon.user.core.service.RealmService;
  * bind="setPEPService"
  * unbind="unsetPEPService"
  * @scr.reference name="org.wso2.carbon.device.manager"
- * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementService"
+ * interface="org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService"
  * cardinality="1..1"
  * policy="dynamic"
  * bind="setDeviceManagementService"
  * unbind="unsetDeviceManagementService"
+ * @scr.reference name="org.wso2.carbon.policy.mgt.common.policy.monitor"
+ * interface="org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService"
+ * cardinality="0..n"
+ * policy="dynamic"
+ * bind="setPolicyMonitoringService"
+ * unbind="unsetPolicyMonitoringService"
+ * @scr.reference name="ntask.component"
+ * interface="org.wso2.carbon.ntask.core.service.TaskService"
+ * cardinality="1..1"
+ * policy="dynamic"
+ * bind="setTaskService"
+ * unbind="unsetTaskService"
  */
 @SuppressWarnings("unused")
 public class PolicyManagementServiceComponent {
@@ -124,23 +138,55 @@ public class PolicyManagementServiceComponent {
 
     protected void unsetPEPService(PolicyEvaluationPoint pepService) {
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting Policy Information Service");
+            log.debug("Removing Policy Information Service");
         }
         PolicyManagementDataHolder.getInstance().setPolicyEvaluationPoint(null);
     }
 
-    protected void setDeviceManagementService(DeviceManagementService deviceManagerService) {
+    protected void setDeviceManagementService(DeviceManagementProviderService deviceManagerService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting Device Management Service");
         }
         PolicyManagementDataHolder.getInstance().setDeviceManagementService(deviceManagerService);
     }
 
-    protected void unsetDeviceManagementService(DeviceManagementService deviceManagementService) {
+    protected void unsetDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting Device Management Service");
+            log.debug("Removing Device Management Service");
         }
         PolicyManagementDataHolder.getInstance().setDeviceManagementService(null);
+    }
+
+
+    protected void setPolicyMonitoringService(PolicyMonitoringService policyMonitoringService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting Policy Monitoring Service");
+        }
+        // TODO: FIX THE device type by taking from properties
+        PolicyManagementDataHolder.getInstance().setPolicyMonitoringService(policyMonitoringService.getType(),
+                policyMonitoringService);
+    }
+
+    protected void unsetPolicyMonitoringService(PolicyMonitoringService policyMonitoringService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing the Policy Monitoring Service");
+        }
+        // TODO: FIX THE device type by taking from properties
+        PolicyManagementDataHolder.getInstance().unsetPolicyMonitoringService(policyMonitoringService.getType());
+    }
+
+    protected void setTaskService(TaskService taskService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting the task service.");
+        }
+        PolicyManagementDataHolder.getInstance().setTaskService(taskService);
+    }
+
+    protected void unsetTaskService(TaskService taskService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Removing the task service.");
+        }
+        PolicyManagementDataHolder.getInstance().setTaskService(null);
     }
 
 }

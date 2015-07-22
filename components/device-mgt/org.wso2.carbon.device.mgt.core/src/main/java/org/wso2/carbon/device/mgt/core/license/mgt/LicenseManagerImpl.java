@@ -19,13 +19,10 @@
 
 package org.wso2.carbon.device.mgt.core.license.mgt;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementConstants;
+import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
-import org.wso2.carbon.device.mgt.core.DeviceManagementServiceProviderImpl;
-import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.governance.api.exception.GovernanceException;
 import org.wso2.carbon.governance.api.generic.GenericArtifactFilter;
 import org.wso2.carbon.governance.api.generic.GenericArtifactManager;
@@ -38,9 +35,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class LicenseManagerImpl implements LicenseManager {
-
-    private static Log log = LogFactory.getLog(DeviceManagementServiceProviderImpl.class);
-    private static final DateFormat format = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
 
     @Override
     public License getLicense(final String deviceType, final String languageCode) throws LicenseManagementException {
@@ -78,6 +72,8 @@ public class LicenseManagerImpl implements LicenseManager {
         license.setVersion(artifact.getAttribute(DeviceManagementConstants.LicenseProperties.VERSION));
         license.setLanguage(artifact.getAttribute(DeviceManagementConstants.LicenseProperties.LANGUAGE));
         license.setText(artifact.getAttribute(DeviceManagementConstants.LicenseProperties.TEXT));
+
+        DateFormat format = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
         license.setValidFrom(format.parse(artifact.getAttribute(
                 DeviceManagementConstants.LicenseProperties.VALID_FROM)));
         license.setValidTo(format.parse(artifact.getAttribute(

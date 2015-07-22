@@ -18,20 +18,26 @@
 
 package org.wso2.carbon.policy.mgt.core.internal;
 
-import org.wso2.carbon.device.mgt.core.service.DeviceManagementService;
+import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
 import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
+import org.wso2.carbon.policy.mgt.common.spi.PolicyMonitoringService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
+import java.util.Map;
+
 public class PolicyManagementDataHolder {
 
+    private static PolicyManagementDataHolder thisInstance = new PolicyManagementDataHolder();
     private RealmService realmService;
     private TenantManager tenantManager;
     private PolicyEvaluationPoint policyEvaluationPoint;
     private PolicyInformationPoint policyInformationPoint;
-    private DeviceManagementService deviceManagementService;
-    private static PolicyManagementDataHolder thisInstance = new PolicyManagementDataHolder();
+    private DeviceManagementProviderService deviceManagementService;
+    private Map<String, PolicyMonitoringService> policyMonitoringServiceMap;
+    private TaskService taskService;
 
     private PolicyManagementDataHolder() {}
 
@@ -48,15 +54,15 @@ public class PolicyManagementDataHolder {
         this.setTenantManager(realmService);
     }
 
+    public TenantManager getTenantManager() {
+        return tenantManager;
+    }
+
     private void setTenantManager(RealmService realmService) {
         if (realmService == null) {
             throw new IllegalStateException("Realm service is not initialized properly");
         }
         this.tenantManager = realmService.getTenantManager();
-    }
-
-    public TenantManager getTenantManager() {
-        return tenantManager;
     }
 
     public PolicyEvaluationPoint getPolicyEvaluationPoint() {
@@ -75,11 +81,31 @@ public class PolicyManagementDataHolder {
         this.policyInformationPoint = policyInformationPoint;
     }
 
-    public DeviceManagementService getDeviceManagementService() {
+    public DeviceManagementProviderService getDeviceManagementService() {
         return deviceManagementService;
     }
 
-    public void setDeviceManagementService(DeviceManagementService deviceManagementService) {
+    public void setDeviceManagementService(DeviceManagementProviderService deviceManagementService) {
         this.deviceManagementService = deviceManagementService;
+    }
+
+    public PolicyMonitoringService getPolicyMonitoringService(String deviceType) {
+        return policyMonitoringServiceMap.get(deviceType);
+    }
+
+    public void setPolicyMonitoringService(String deviceType, PolicyMonitoringService policyMonitoringService) {
+        this.policyMonitoringServiceMap.put(deviceType, policyMonitoringService);
+    }
+
+    public void unsetPolicyMonitoringService(String deviceType) {
+        this.policyMonitoringServiceMap.remove(deviceType);
+    }
+
+    public TaskService getTaskService() {
+        return taskService;
+    }
+
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
     }
 }

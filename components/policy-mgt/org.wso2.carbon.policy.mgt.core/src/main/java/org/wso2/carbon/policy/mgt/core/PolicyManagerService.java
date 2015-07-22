@@ -21,22 +21,21 @@ package org.wso2.carbon.policy.mgt.core;
 
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
-import org.wso2.carbon.policy.mgt.common.FeatureManagementException;
-import org.wso2.carbon.policy.mgt.common.Policy;
-import org.wso2.carbon.policy.mgt.common.PolicyAdministratorPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyEvaluationPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyInformationPoint;
-import org.wso2.carbon.policy.mgt.common.PolicyManagementException;
-import org.wso2.carbon.policy.mgt.common.Profile;
-import org.wso2.carbon.policy.mgt.common.ProfileFeature;
+import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
 
 import java.util.List;
 
 public interface PolicyManagerService {
 
+/*
     Feature addFeature(Feature feature) throws FeatureManagementException;
 
     Feature updateFeature(Feature feature) throws FeatureManagementException;
+*/
 
     Profile addProfile(Profile profile) throws PolicyManagementException;
 
@@ -64,5 +63,16 @@ public interface PolicyManagerService {
 
     PolicyEvaluationPoint getPEP() throws PolicyManagementException;
 
+    TaskScheduleService getTaskScheduleService() throws PolicyMonitoringTaskException;
+
     int getPolicyCount() throws PolicyManagementException;
+
+    List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
+            deviceResponse) throws PolicyComplianceException;
+
+    boolean checkCompliance(DeviceIdentifier deviceIdentifier, Object response) throws PolicyComplianceException;
+
+    ComplianceData getDeviceCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
+
+    boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException;
 }

@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.wso2.carbon.devicemgt</groupId>
         <artifactId>policy-mgt</artifactId>
@@ -52,12 +53,9 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${carbon.device.mgt.version}</Bundle-Version>
                         <Bundle-Description>Policy Management Common Bundle</Bundle-Description>
-                        <Private-Package>org.wso2.carbon.policy.mgt.common.internal</Private-Package>
                         <Import-Package>
-                            org.apache.commons.logging,
                             org.wso2.carbon.device.mgt.common.*,
                             org.wso2.carbon.device.mgt.core.dto.*,
-                            org.wso2.carbon.device.mgt.core.operation.*,
                             javax.xml.bind.*,
                         </Import-Package>
                         <Export-Package>

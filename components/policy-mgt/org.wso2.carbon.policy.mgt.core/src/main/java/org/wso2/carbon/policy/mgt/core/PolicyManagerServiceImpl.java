@@ -27,10 +27,16 @@ import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManagementExcept
 import org.wso2.carbon.device.mgt.core.operation.mgt.PolicyOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.ProfileOperation;
 import org.wso2.carbon.policy.mgt.common.*;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceData;
+import org.wso2.carbon.policy.mgt.common.monitor.ComplianceFeature;
+import org.wso2.carbon.policy.mgt.common.monitor.PolicyComplianceException;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyAdministratorPointImpl;
 import org.wso2.carbon.policy.mgt.core.impl.PolicyInformationPointImpl;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
-import org.wso2.carbon.policy.mgt.core.util.PolicyManagementConstants;
+import org.wso2.carbon.policy.mgt.core.mgt.MonitoringManager;
+import org.wso2.carbon.policy.mgt.core.mgt.impl.MonitoringManagerImpl;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleService;
+import org.wso2.carbon.policy.mgt.core.task.TaskScheduleServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,19 +46,11 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     private static final Log log = LogFactory.getLog(PolicyManagerServiceImpl.class);
 
     PolicyAdministratorPointImpl policyAdministratorPoint;
+    MonitoringManager monitoringManager;
 
     public PolicyManagerServiceImpl() {
         policyAdministratorPoint = new PolicyAdministratorPointImpl();
-    }
-
-    @Override
-    public Feature addFeature(Feature feature) throws FeatureManagementException {
-        return policyAdministratorPoint.addFeature(feature);
-    }
-
-    @Override
-    public Feature updateFeature(Feature feature) throws FeatureManagementException {
-        return policyAdministratorPoint.updateFeature(feature);
+        monitoringManager = new MonitoringManagerImpl();
     }
 
     @Override
@@ -99,17 +97,26 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
 
                 List<ProfileFeature> effectiveFeatures = policy.getProfile().getProfileFeaturesList();
                 List<ProfileOperation> profileOperationList = new ArrayList<ProfileOperation>();
-                for (ProfileFeature feature : effectiveFeatures) {
-                    ProfileOperation operation = new ProfileOperation();
 
-                    operation.setCode(feature.getFeatureCode());
-                    operation.setEnabled(true);
-                    operation.setStatus(Operation.Status.PENDING);
-                    operation.setType(Operation.Type.PROFILE);
-                    operation.setPayLoad(feature.getContent());
-                    PolicyManagementDataHolder.getInstance().getDeviceManagementService().
-                            addOperation(operation, deviceIdentifiers);
+                PolicyOperation policyOperation = new PolicyOperation();
+                policyOperation.setEnabled(true);
+                policyOperation.setType(Operation.Type.POLICY);
+                policyOperation.setCode(PolicyOperation.POLICY_OPERATION_CODE);
+
+                for (ProfileFeature feature : effectiveFeatures) {
+                    ProfileOperation profileOperation = new ProfileOperation();
+
+                    profileOperation.setCode(feature.getFeatureCode());
+                    profileOperation.setEnabled(true);
+                    profileOperation.setStatus(Operation.Status.PENDING);
+                    profileOperation.setType(Operation.Type.PROFILE);
+                    profileOperation.setPayLoad(feature.getContent());
+                    profileOperationList.add(profileOperation);
                 }
+                policyOperation.setProfileOperations(profileOperationList);
+                policyOperation.setPayLoad(policyOperation.getProfileOperations());
+                PolicyManagementDataHolder.getInstance().getDeviceManagementService().
+                        addOperation(policyOperation, deviceIdentifiers);
 
             } else {
                 return null;
@@ -134,7 +141,8 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
             FeatureManagementException {
         try {
 
-            List<ProfileFeature> effectiveFeatures = PolicyManagementDataHolder.getInstance().getPolicyEvaluationPoint().
+            List<ProfileFeature> effectiveFeatures = PolicyManagementDataHolder.getInstance()
+                    .getPolicyEvaluationPoint().
                     getEffectiveFeatures(deviceIdentifier);
 
             List<DeviceIdentifier> deviceIdentifiers = new ArrayList<DeviceIdentifier>();
@@ -198,7 +206,40 @@ public class PolicyManagerServiceImpl implements PolicyManagerService {
     }
 
     @Override
+    public TaskScheduleService getTaskScheduleService() throws PolicyMonitoringTaskException {
+        return new TaskScheduleServiceImpl();
+    }
+
+    @Override
     public int getPolicyCount() throws PolicyManagementException {
         return policyAdministratorPoint.getPolicyCount();
+    }
+
+    @Override
+    public List<ComplianceFeature> CheckPolicyCompliance(DeviceIdentifier deviceIdentifier, Object
+            deviceResponse) throws PolicyComplianceException {
+        return monitoringManager.checkPolicyCompliance(deviceIdentifier, deviceResponse);
+    }
+
+    @Override
+    public boolean checkCompliance(DeviceIdentifier deviceIdentifier, Object response) throws
+            PolicyComplianceException {
+
+        List<ComplianceFeature> complianceFeatures =
+                monitoringManager.checkPolicyCompliance(deviceIdentifier, response);
+        if (complianceFeatures == null || complianceFeatures.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public ComplianceData getDeviceCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+        return monitoringManager.getDevicePolicyCompliance(deviceIdentifier);
+    }
+
+    @Override
+    public boolean isCompliance(DeviceIdentifier deviceIdentifier) throws PolicyComplianceException {
+        return monitoringManager.isCompliance(deviceIdentifier);
     }
 }

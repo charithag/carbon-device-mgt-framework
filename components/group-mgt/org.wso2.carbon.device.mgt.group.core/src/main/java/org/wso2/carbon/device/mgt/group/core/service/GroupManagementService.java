@@ -4,7 +4,6 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.group.common.Group;
 import org.wso2.carbon.device.mgt.group.common.GroupManagementException;
-import org.wso2.carbon.device.mgt.user.common.User;
 import org.wso2.carbon.user.core.Permission;
 
 import java.util.List;
@@ -37,9 +36,7 @@ public interface GroupManagementService {
 
     List<String> getGroupRolesForUser(String userName, int groupId) throws GroupManagementException;
 
-    List<User> getUsersForGroup(int groupId) throws GroupManagementException;
-
-    String[] getPermissionsForGroupRole(int groupId, String sharingRole) throws GroupManagementException;
+    String[] getUsersForGroup(int groupId) throws GroupManagementException;
 
     List<Device> getAllDevicesInGroup(int groupId) throws GroupManagementException;
 

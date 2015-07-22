@@ -1,20 +1,8 @@
--- -----------------------------------------------------
--- Table DM_DEVICE_TYPE
--- -----------------------------------------------------
-
-
 CREATE TABLE IF NOT EXISTS DM_DEVICE_TYPE (
-  ID   INT(11) AUTO_INCREMENT,
-  NAME VARCHAR(300) NULL DEFAULT NULL,
+  ID   INT AUTO_INCREMENT NOT NULL,
+  NAME VARCHAR(300)       NULL DEFAULT NULL,
   PRIMARY KEY (ID)
 );
-
---INSERT INTO DM_DEVICE_TYPE (NAME) VALUES ('ANDROID');
---INSERT INTO DM_DEVICE_TYPE (NAME) VALUES ('IOS');
-
--- -----------------------------------------------------
--- Table DM_GROUP
--- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS DM_GROUP (
   ID                  INTEGER AUTO_INCREMENT NOT NULL,
@@ -26,10 +14,6 @@ CREATE TABLE IF NOT EXISTS DM_GROUP (
   TENANT_ID           INTEGER                     DEFAULT 0,
   PRIMARY KEY (ID)
 );
-
--- -----------------------------------------------------
--- Table DM_DEVICE
--- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS DM_DEVICE (
   ID                    INTEGER AUTO_INCREMENT NOT NULL,
@@ -43,18 +27,112 @@ CREATE TABLE IF NOT EXISTS DM_DEVICE (
   DEVICE_IDENTIFICATION VARCHAR(300)           NULL DEFAULT NULL,
   OWNER                 VARCHAR(45)            NULL DEFAULT NULL,
   TENANT_ID             INTEGER                     DEFAULT 0,
-  PRIMARY KEY (ID),
   GROUP_ID              INT(11)                NULL DEFAULT NULL,
   PRIMARY KEY (ID),
   CONSTRAINT fk_DM_DEVICE_DM_DEVICE_TYPE2 FOREIGN KEY (DEVICE_TYPE_ID)
   REFERENCES DM_DEVICE_TYPE (ID)
   ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+  CONSTRAINT fk_DM_DEVICE_DM_GROUP2 FOREIGN KEY (GROUP_ID)
+  REFERENCES DM_GROUP (ID)
+  ON DELETE NO ACTION
   ON UPDATE NO ACTION
 );
 
--- -----------------------------------------------------
--- Table DM_PROFILE
--- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS DM_ENROLMENT (
+  ID                  INTEGER AUTO_INCREMENT NOT NULL,
+  DEVICE_ID           INTEGER                NOT NULL,
+  OWNER               VARCHAR(50)            NOT NULL,
+  OWNERSHIP           VARCHAR(45)            NULL DEFAULT NULL,
+  STATUS              VARCHAR(50)            NULL,
+  DATE_OF_ENROLMENT   TIMESTAMP              NULL DEFAULT NULL,
+  DATE_OF_LAST_UPDATE TIMESTAMP              NULL DEFAULT NULL,
+  TENANT_ID           INT                    NOT NULL,
+  PRIMARY KEY (ID),
+  CONSTRAINT fk_dm_device_enrolment FOREIGN KEY (DEVICE_ID) REFERENCES
+    DM_DEVICE (ID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+
+CREATE TABLE IF NOT EXISTS DM_OPERATION (
+  ID                 INTEGER AUTO_INCREMENT NOT NULL,
+  TYPE               VARCHAR(50)            NOT NULL,
+  CREATED_TIMESTAMP  TIMESTAMP              NOT NULL,
+  RECEIVED_TIMESTAMP TIMESTAMP              NULL,
+  OPERATION_CODE     VARCHAR(1000)          NOT NULL,
+  PRIMARY KEY (ID)
+);
+
+CREATE TABLE IF NOT EXISTS DM_CONFIG_OPERATION (
+  OPERATION_ID     INTEGER NOT NULL,
+  OPERATION_CONFIG BLOB DEFAULT NULL,
+  PRIMARY KEY (OPERATION_ID),
+  CONSTRAINT fk_dm_operation_config FOREIGN KEY (OPERATION_ID) REFERENCES
+    DM_OPERATION (ID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS DM_COMMAND_OPERATION (
+  OPERATION_ID INTEGER NOT NULL,
+  ENABLED      BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (OPERATION_ID),
+  CONSTRAINT fk_dm_operation_command FOREIGN KEY (OPERATION_ID) REFERENCES
+    DM_OPERATION (ID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS DM_POLICY_OPERATION (
+  OPERATION_ID      INTEGER NOT NULL,
+  ENABLED           INTEGER NOT NULL DEFAULT 0,
+  OPERATION_DETAILS BLOB             DEFAULT NULL,
+  PRIMARY KEY (OPERATION_ID),
+  CONSTRAINT fk_dm_operation_policy FOREIGN KEY (OPERATION_ID) REFERENCES
+    DM_OPERATION (ID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS DM_PROFILE_OPERATION (
+  OPERATION_ID      INTEGER NOT NULL,
+  ENABLED           INTEGER NOT NULL DEFAULT 0,
+  OPERATION_DETAILS BLOB             DEFAULT NULL,
+  PRIMARY KEY (OPERATION_ID),
+  CONSTRAINT fk_dm_operation_profile FOREIGN KEY (OPERATION_ID) REFERENCES
+    DM_OPERATION (ID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS DM_DEVICE_OPERATION_MAPPING (
+  ID           INTEGER AUTO_INCREMENT NOT NULL,
+  DEVICE_ID    INTEGER                NOT NULL,
+  OPERATION_ID INTEGER                NOT NULL,
+  STATUS       VARCHAR(50)            NULL,
+  PRIMARY KEY (ID),
+  CONSTRAINT fk_dm_device_operation_mapping_device FOREIGN KEY (DEVICE_ID) REFERENCES
+    DM_DEVICE (ID) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT fk_dm_device_operation_mapping_operation FOREIGN KEY (OPERATION_ID) REFERENCES
+    DM_OPERATION (ID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS DM_DEVICE_OPERATION_RESPONSE (
+  ID                 INTEGER AUTO_INCREMENT NOT NULL,
+  DEVICE_ID          INTEGER                NOT NULL,
+  OPERATION_ID       INTEGER                NOT NULL,
+  OPERATION_RESPONSE BLOB DEFAULT NULL,
+  PRIMARY KEY (ID),
+  CONSTRAINT fk_dm_device_operation_response_device FOREIGN KEY (DEVICE_ID) REFERENCES
+    DM_DEVICE (ID) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT fk_dm_device_operation_response_operation FOREIGN KEY (OPERATION_ID) REFERENCES
+    DM_OPERATION (ID) ON DELETE NO ACTION ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS DM_DEVICE_APPLICATIONS (
+  ID           INTEGER AUTO_INCREMENT NOT NULL,
+  DEVICE_ID    INTEGER                NOT NULL,
+  APPLICATIONS BLOB DEFAULT NULL,
+  PRIMARY KEY (ID),
+  CONSTRAINT fk_dm_device_applications_device FOREIGN KEY (DEVICE_ID) REFERENCES
+    DM_DEVICE (ID) ON DELETE NO ACTION ON UPDATE NO ACTION,
+);
+
+--- POLICY RELATED TABLES ----
+
+
 
 
 CREATE TABLE IF NOT EXISTS DM_PROFILE (
@@ -73,11 +151,6 @@ CREATE TABLE IF NOT EXISTS DM_PROFILE (
 );
 
 
--- -----------------------------------------------------
--- Table DM_POLICY
--- -----------------------------------------------------
-
-
 CREATE TABLE IF NOT EXISTS DM_POLICY (
   ID             INT(11)      NOT NULL AUTO_INCREMENT,
   NAME           VARCHAR(45)  NULL DEFAULT NULL,
@@ -93,11 +166,6 @@ CREATE TABLE IF NOT EXISTS DM_POLICY (
   ON DELETE NO ACTION
   ON UPDATE NO ACTION
 );
-
-
--- -----------------------------------------------------
--- Table DM_DEVICE_POLICY
--- -----------------------------------------------------
 
 
 CREATE TABLE IF NOT EXISTS DM_DEVICE_POLICY (
@@ -118,11 +186,6 @@ CREATE TABLE IF NOT EXISTS DM_DEVICE_POLICY (
 );
 
 
--- -----------------------------------------------------
--- Table DM_DEVICE_TYPE_POLICY
--- -----------------------------------------------------
-
-
 CREATE TABLE IF NOT EXISTS DM_DEVICE_TYPE_POLICY (
   ID             INT(11) NOT NULL,
   DEVICE_TYPE_ID INT(11) NOT NULL,
@@ -141,11 +204,6 @@ CREATE TABLE IF NOT EXISTS DM_DEVICE_TYPE_POLICY (
 );
 
 
--- -----------------------------------------------------
--- Table DM_PROFILE_FEATURES
--- -----------------------------------------------------
-
-
 CREATE TABLE IF NOT EXISTS DM_PROFILE_FEATURES (
   ID             INT(11)     NOT NULL AUTO_INCREMENT,
   PROFILE_ID     INT(11)     NOT NULL,
@@ -161,11 +219,6 @@ CREATE TABLE IF NOT EXISTS DM_PROFILE_FEATURES (
 );
 
 
--- -----------------------------------------------------
--- Table DM_ROLE_POLICY
--- -----------------------------------------------------
-
-
 CREATE TABLE IF NOT EXISTS DM_ROLE_POLICY (
   ID        INT(11)     NOT NULL AUTO_INCREMENT,
   ROLE_NAME VARCHAR(45) NOT NULL,
@@ -178,10 +231,6 @@ CREATE TABLE IF NOT EXISTS DM_ROLE_POLICY (
   ON UPDATE NO ACTION
 );
 
-
--- -----------------------------------------------------
--- Table .DM_USER_POLICY
--- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS DM_USER_POLICY (
   ID        INT         NOT NULL AUTO_INCREMENT,
@@ -219,11 +268,6 @@ CREATE TABLE IF NOT EXISTS DM_DEVICE_POLICY_APPLIED (
 );
 
 
--- -----------------------------------------------------
--- Table DM_CRITERIA
--- -----------------------------------------------------
-DROP TABLE IF EXISTS DM_CRITERIA;
-
 CREATE TABLE IF NOT EXISTS DM_CRITERIA (
   ID        INT         NOT NULL AUTO_INCREMENT,
   TENANT_ID INT         NOT NULL,
@@ -231,11 +275,6 @@ CREATE TABLE IF NOT EXISTS DM_CRITERIA (
   PRIMARY KEY (ID)
 );
 
-
--- -----------------------------------------------------
--- Table DM_POLICY_CRITERIA
--- -----------------------------------------------------
-DROP TABLE IF EXISTS DM_POLICY_CRITERIA;
 
 CREATE TABLE IF NOT EXISTS DM_POLICY_CRITERIA (
   ID        INT NOT NULL AUTO_INCREMENT,
@@ -255,11 +294,6 @@ CREATE TABLE IF NOT EXISTS DM_POLICY_CRITERIA (
 );
 
 
--- -----------------------------------------------------
--- Table DM_POLICY_CRITERIA_PROPERTIES
--- -----------------------------------------------------
-DROP TABLE IF EXISTS DM_POLICY_CRITERIA_PROPERTIES;
-
 CREATE TABLE IF NOT EXISTS DM_POLICY_CRITERIA_PROPERTIES (
   ID                  INT          NOT NULL AUTO_INCREMENT,
   POLICY_CRITERION_ID INT          NOT NULL,
@@ -276,3 +310,9 @@ CREATE TABLE IF NOT EXISTS DM_POLICY_CRITERIA_PROPERTIES (
 );
 
 
+-- POLICY RELATED TABLES  FINISHED --
+
+
+-- TO:DO - Remove this INSERT sql statement.
+--Insert into DM_DEVICE_TYPE (ID,NAME) VALUES (1, 'android');
+--Insert into DM_DEVICE_TYPE (ID,NAME) VALUES (2, 'ios');

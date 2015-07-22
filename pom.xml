@@ -17,7 +17,7 @@
  ~ under the License.
  -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
@@ -39,14 +39,13 @@
         <module>components/device-mgt</module>
         <module>components/group-mgt</module>
         <module>components/policy-mgt</module>
-        <module>components/user-mgt</module>
         <module>components/webapp-authenticator-framework</module>
         <module>components/oauth-extensions</module>
         <module>features/device-mgt</module>
         <module>features/group-mgt</module>
         <module>features/policy-mgt</module>
-        <module>features/user-mgt</module>
         <module>features/webapp-authenticator-framework</module>
+        <module>features/oauth-extensions</module>
     </modules>
 
     <dependencyManagement>
@@ -152,16 +151,6 @@
             <dependency>
                 <groupId>org.wso2.carbon.devicemgt</groupId>
                 <artifactId>org.wso2.carbon.policy.information.point</artifactId>
-                <version>${carbon.device.mgt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.device.mgt.user.core</artifactId>
-                <version>${carbon.device.mgt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon.devicemgt</groupId>
-                <artifactId>org.wso2.carbon.device.mgt.user.common</artifactId>
                 <version>${carbon.device.mgt.version}</version>
             </dependency>
             <dependency>
@@ -929,6 +918,13 @@
                 <artifactId>jackson-jaxrs</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.ntask.core</artifactId>
+                <version>${carbon.commons.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -962,16 +958,16 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-compiler-plugin</artifactId>-->
-            <!--<version>2.3.1</version>-->
-            <!--<configuration>-->
-            <!--<encoding>UTF-8</encoding>-->
-            <!--<source>1.6</source>-->
-            <!--<target>1.6</target>-->
-            <!--</configuration>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
