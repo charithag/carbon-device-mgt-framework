@@ -244,8 +244,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             roles = userStoreManager.getRoleNames();
             groupRoles = new ArrayList<>();
             for (String r : roles) {
-                if (r != null && r.contains("groups/" + groupId)) {
-                    groupRoles.add(r);
+                if (r != null && r.contains("Internal/groups/" + groupId + "/")) {
+                    groupRoles.add(r.replace("Internal/groups/" + groupId + "/", ""));
                 }
             }
             return groupRoles;
@@ -278,14 +278,23 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     }
 
     @Override
-    public String[] getUsersForGroup(int groupId) throws GroupManagementException {
+    public List<String> getUsersForGroup(int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
-        String[] userNames;
+        List<String> userNames;
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
+            userNames = new ArrayList<>();
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
-            userNames = userStoreManager.getUserListOfRole("Internal/groups/" + groupId + "/*");
+            List<String> rolesForGroup = this.getAllRolesForGroup(groupId);
+            for (String role : rolesForGroup) {
+                String[] users = userStoreManager.getUserListOfRole("Internal/groups/" + groupId + "/" + role);
+                for (String user : users){
+                    if (!userNames.contains(user)){
+                        userNames.add(user);
+                    }
+                }
+            }
             return userNames;
         } catch (UserStoreException userStoreEx) {
             String errorMsg = "User store error in fetching user list for group id:" + groupId;

@@ -36,7 +36,7 @@ public interface GroupManagementServiceProvider {
 
     List<String> getGroupRolesForUser(String userName, int groupId) throws GroupManagementException;
 
-    String[] getUsersForGroup(int groupId) throws GroupManagementException;
+    List<String> getUsersForGroup(int groupId) throws GroupManagementException;
 
     List<Device> getAllDevicesInGroup(int groupId) throws GroupManagementException;
 
