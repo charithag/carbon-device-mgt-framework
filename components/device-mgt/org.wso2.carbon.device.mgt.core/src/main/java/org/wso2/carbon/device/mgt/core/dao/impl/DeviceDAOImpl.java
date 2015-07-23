@@ -114,7 +114,23 @@ public class DeviceDAOImpl implements DeviceDAO {
 
     @Override
     public int removeDevice(DeviceIdentifier deviceId, int tenantId) throws DeviceManagementDAOException {
-        return 0;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            String sql = "DELETE from DM_DEVICE  WHERE  DEVICE_IDENTIFICATION = ? AND "
+                    + "DEVICE_TYPE_ID = ? AND TENANT_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, deviceId.getId());
+            stmt.setString(2, deviceId.getType());
+            stmt.setInt(3, tenantId);
+            return stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DeviceManagementDAOException("Error occurred while enrolling device ''", e);
+        } finally {
+            DeviceManagementDAOUtil.cleanupResources(conn, stmt, null);
+        }
     }
 
     @Override
