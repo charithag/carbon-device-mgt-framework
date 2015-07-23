@@ -17,8 +17,11 @@
  */
 package org.wso2.carbon.device.mgt.common;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+@XmlRootElement
 public class Device {
 
 	private int id;
@@ -56,6 +59,7 @@ public class Device {
         this.properties = properties;
     }
 
+	@XmlElement
 	public int getId() {
 		return id;
 	}
@@ -64,6 +68,7 @@ public class Device {
 		this.id = id;
 	}
 
+	@XmlElement
     public String getName() {
         return name;
     }
@@ -72,6 +77,7 @@ public class Device {
         this.name = name;
     }
 
+	@XmlElement
     public String getType() {
         return type;
     }
@@ -80,6 +86,7 @@ public class Device {
         this.type = type;
     }
 
+	@XmlElement
 	public String getDescription() {
 		return description;
 	}
@@ -88,6 +95,7 @@ public class Device {
 		this.description = description;
 	}
 
+	@XmlElement
 	public String getDeviceIdentifier() {
 		return deviceIdentifier;
 	}
@@ -96,6 +104,7 @@ public class Device {
 		this.deviceIdentifier = deviceIdentifier;
 	}
 
+	@XmlElement
     public EnrolmentInfo getEnrolmentInfo() {
         return enrolmentInfo;
     }
@@ -104,6 +113,7 @@ public class Device {
         this.enrolmentInfo = enrolmentInfo;
     }
 
+	@XmlElement
 	public List<Feature> getFeatures() {
 		return features;
 	}
@@ -112,6 +122,7 @@ public class Device {
 		this.features = features;
 	}
 
+	@XmlElement
 	public List<Device.Property> getProperties() {
 		return properties;
 	}
@@ -120,6 +131,7 @@ public class Device {
 		this.properties = properties;
 	}
 
+	@XmlElement
 	public int getGroupId() {
 		return groupId;
 	}
@@ -133,6 +145,7 @@ public class Device {
 		private String name;
 		private String value;
 
+		@XmlElement
 		public String getName() {
 			return name;
 		}
@@ -145,6 +158,7 @@ public class Device {
 			return value;
 		}
 
+		@XmlElement
 		public void setValue(String value) {
 			this.value = value;
 		}
