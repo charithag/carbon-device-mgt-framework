@@ -259,12 +259,12 @@ public class DeviceDAOImpl implements DeviceDAO {
                             "d1.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
                             "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
                             "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
-                            "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 " +
-                            "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? AND d.GROUP_ID = ?";
+                            "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ? AND d.GROUP_ID = ?) d1 " +
+                            "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
-            stmt.setInt(2, tenantId);
-            stmt.setInt(3, groupId);
+            stmt.setInt(2, groupId);
+            stmt.setInt(3, tenantId);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {

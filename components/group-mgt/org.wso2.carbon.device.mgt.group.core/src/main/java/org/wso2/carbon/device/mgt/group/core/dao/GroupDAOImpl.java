@@ -187,67 +187,6 @@ public class GroupDAOImpl implements GroupDAO {
     }
 
     @Override
-    public List<Group> getGroupsOfUser(String username, int tenantId) throws GroupManagementDAOException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-        List<Group> groupList = null;
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT ID, DESCRIPTION, NAME, DATE_OF_ENROLLMENT, " +
-                    "DATE_OF_LAST_UPDATE, OWNER, TENANT_ID FROM DM_GROUP WHERE OWNER = ? AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, username);
-            stmt.setInt(2, tenantId);
-            resultSet = stmt.executeQuery();
-            groupList = new ArrayList<Group>();
-            while (resultSet.next()) {
-                Group group = new Group();
-                group.setId(resultSet.getInt(1));
-                group.setDescription(resultSet.getString(2));
-                group.setName(resultSet.getString(3));
-                group.setDateOfCreation(resultSet.getLong(4));
-                group.setDateOfLastUpdate(resultSet.getLong(5));
-                group.setOwnerId(resultSet.getString(6));
-                group.setTenantId(resultSet.getInt(7));
-                groupList.add(group);
-            }
-        } catch (SQLException e) {
-            String msg = "Error occurred while listing all groups";
-            log.error(msg, e);
-            throw new GroupManagementDAOException(msg, e);
-        } finally {
-            GroupManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
-        }
-        return groupList;
-    }
-
-    @Override
-    public int getGroupCountOfUser(String username, int tenantId) throws GroupManagementDAOException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-        int count = 0;
-        try {
-            conn = this.getConnection();
-            String sql = "SELECT COUNT(ID) AS GROUP_COUNT FROM DM_GROUP WHERE OWNER = ? AND TENANT_ID = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, username);
-            stmt.setInt(2, tenantId);
-            resultSet = stmt.executeQuery();
-            if (resultSet.next()) {
-            }
-        } catch (SQLException e) {
-            String msg = "Error occurred while listing all groups";
-            log.error(msg, e);
-            throw new GroupManagementDAOException(msg, e);
-        } finally {
-            GroupManagementDAOUtil.cleanupResources(conn, stmt, resultSet);
-        }
-        return count;
-    }
-
-    @Override
     public Group getGroupByName(String groupName, int tenantId) throws GroupManagementDAOException {
         Connection conn = null;
         PreparedStatement stmt = null;

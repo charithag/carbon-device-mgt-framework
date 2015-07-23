@@ -17,7 +17,9 @@ import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.Permission;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GroupManagementServiceProviderImpl implements GroupManagementServiceProvider {
 
@@ -113,19 +115,22 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     @Override
     public List<Group> getGroupListOfUser(String username) throws GroupManagementException {
         UserStoreManager userStoreManager;
-        List<Group> groupList = new ArrayList<Group>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             String[] roleList = userStoreManager.getRoleListOfUser(username);
+            Map<Integer, Group> groups = new HashMap<>();
             for (String role : roleList) {
                 if (role != null && role.contains("Internal/groups/")) {
                     int groupId = Integer.parseInt(role.split("/")[2]);
-                    Group group = getGroupById(groupId);
-                    groupList.add(group);
+                    if (!groups.containsKey(groupId)) {
+                        Group group = getGroupById(groupId);
+                        groups.put(groupId, group);
+                    }
                 }
             }
+            List<Group> groupList = new ArrayList<>(groups.values());
             return groupList;
         } catch (UserStoreException e) {
             throw new GroupManagementException("Error occurred while getting user store manager", e);
@@ -134,12 +139,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
 
     @Override
     public int getGroupCountOfUser(String username) throws GroupManagementException {
-        int tenantId = DeviceManagerUtil.getTenantId();
-        try {
-            return this.groupDAO.getGroupCountOfUser(username, tenantId);
-        } catch (GroupManagementDAOException e) {
-            throw new GroupManagementException("Error occurred while getting group count", e);
-        }
+        return this.getGroupListOfUser(username).size();
     }
 
     @Override
@@ -242,7 +242,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager();
             roles = userStoreManager.getRoleNames();
-            groupRoles = new ArrayList<String>();
+            groupRoles = new ArrayList<>();
             for (String r : roles) {
                 if (r != null && r.contains("groups/" + groupId)) {
                     groupRoles.add(r);
@@ -259,7 +259,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     @Override
     public List<String> getGroupRolesForUser(String username, int groupId) throws GroupManagementException {
         UserStoreManager userStoreManager;
-        List<String> groupRoleList = new ArrayList<String>();
+        List<String> groupRoleList = new ArrayList<>();
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
             userStoreManager = DeviceMgtGroupDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
