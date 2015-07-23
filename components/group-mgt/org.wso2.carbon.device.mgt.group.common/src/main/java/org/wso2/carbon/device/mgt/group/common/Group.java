@@ -18,8 +18,11 @@
 
 package org.wso2.carbon.device.mgt.group.common;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
+@XmlRootElement
 public class Group implements Serializable {
 
     private static final long serialVersionUID = -8101106997837486245L;
@@ -31,6 +34,7 @@ public class Group implements Serializable {
     private String ownerId;
     private int tenantId;
 
+    @XmlElement
     public int getId() {
         return id;
     }
@@ -39,6 +43,7 @@ public class Group implements Serializable {
         this.id = id;
     }
 
+    @XmlElement
     public String getDescription() {
         return description;
     }
@@ -47,6 +52,7 @@ public class Group implements Serializable {
         this.description = description;
     }
 
+    @XmlElement
     public String getName() {
         return name;
     }
@@ -55,6 +61,7 @@ public class Group implements Serializable {
         this.name = name;
     }
 
+    @XmlElement
     public Long getDateOfCreation() {
         return dateOfCreation;
     }
@@ -63,6 +70,7 @@ public class Group implements Serializable {
         this.dateOfCreation = dateOfCreation;
     }
 
+    @XmlElement
     public Long getDateOfLastUpdate() {
         return dateOfLastUpdate;
     }
@@ -71,6 +79,7 @@ public class Group implements Serializable {
         this.dateOfLastUpdate = dateOfLastUpdate;
     }
 
+    @XmlElement
     public String getOwnerId() {
         return ownerId;
     }
@@ -79,6 +88,7 @@ public class Group implements Serializable {
         this.ownerId = ownerId;
     }
 
+    @XmlElement
     public int getTenantId() {
         return tenantId;
     }

@@ -18,9 +18,11 @@
 package org.wso2.carbon.device.mgt.core.service;
 
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.DeviceManager;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManager;
 import org.wso2.carbon.device.mgt.common.operation.mgt.OperationManager;
-
 import java.util.List;
 
 /**
@@ -40,12 +42,22 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
     FeatureManager getFeatureManager(String type) throws DeviceManagementException;
 
     /**
+     * Proxy method to get the tenant configuration of a given platform.
+     *
+     * @param type          Device platform
+     * @return Tenant configuration settings of the particular tenant and platform.
+     * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
+     * configuration.
+     */
+    TenantConfiguration getConfiguration(String type) throws DeviceManagementException;
+
+    /**
      * Method to get the list of devices owned by an user.
      *
-     * @param userName Username of the user
+     * @param userName          Username of the user
      * @return List of devices owned by a particular user
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     *                                   device list
+     * device list
      */
     List<Device> getDevicesOfUser(String userName) throws DeviceManagementException;
 
@@ -55,36 +67,35 @@ public interface DeviceManagementProviderService extends DeviceManager, LicenseM
      * @param groupId of the group
      * @return List of devices allocated to a particular group
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     *                                   device list
+     * device list
      */
     List<Device> getDevicesOfGroup(int groupId) throws DeviceManagementException;
 
     /**
      * Method to get the list of devices owned by users of a particular user-role.
      *
-     * @param roleName Role name of the users
+     * @param roleName          Role name of the users
      * @return List of devices owned by users of a particular role
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     *                                   device list
+     * device list
      */
     List<Device> getAllDevicesOfRole(String roleName) throws DeviceManagementException;
 
     /**
      * Method to get the count of all types of devices.
-     *
      * @return device count
      * @throws DeviceManagementException If some unusual behaviour is observed while counting
-     *                                   the devices
+     * the devices
      */
     int getDeviceCount() throws DeviceManagementException;
 
     /**
      * Method to get the list of devices that matches with the given device name.
      *
-     * @param deviceName name of the device
+     * @param deviceName    name of the device
      * @return List of devices that matches with the given device name.
      * @throws DeviceManagementException If some unusual behaviour is observed while fetching the
-     *                                   device list
+     * device list
      */
     List<Device> getDevicesByName(String deviceName) throws DeviceManagementException;
 

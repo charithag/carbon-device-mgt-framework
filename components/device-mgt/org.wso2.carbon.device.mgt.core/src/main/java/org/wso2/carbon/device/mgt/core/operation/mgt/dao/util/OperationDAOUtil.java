@@ -19,6 +19,11 @@
 package org.wso2.carbon.device.mgt.core.operation.mgt.dao.util;
 
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.*;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.CommandOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ConfigOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
+import org.wso2.carbon.device.mgt.core.operation.mgt.*;
 
 public class OperationDAOUtil {
 
@@ -30,9 +35,9 @@ public class OperationDAOUtil {
             dtoOperation = new CommandOperation();
         } else if (operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.PROFILE)) {
             dtoOperation = new ProfileOperation();
-        } else if (operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.POLICY)) {
+        }else if(operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.POLICY)){
             dtoOperation = new PolicyOperation();
-        } else if (operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.CONFIG)) {
+        }else if(operation.getType().equals(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.CONFIG)) {
             dtoOperation = new ConfigOperation();
         }else{
             dtoOperation = new Operation();
@@ -77,14 +82,14 @@ public class OperationDAOUtil {
         operation.setEnabled(dtoOperation.isEnabled());
         operation.setCode(dtoOperation.getCode());
 
-        if (dtoOperation.getType() != null) {
+        if(dtoOperation.getType() != null) {
             operation.setType(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Type.valueOf(dtoOperation
                     .getType().toString()));
         }
 
         operation.setCreatedTimeStamp(dtoOperation.getCreatedTimeStamp());
 
-        if (dtoOperation.getStatus() != null) {
+        if(dtoOperation.getStatus() != null) {
             operation.setStatus(org.wso2.carbon.device.mgt.common.operation.mgt.Operation.Status.valueOf(dtoOperation
                     .getStatus().toString()));
         }

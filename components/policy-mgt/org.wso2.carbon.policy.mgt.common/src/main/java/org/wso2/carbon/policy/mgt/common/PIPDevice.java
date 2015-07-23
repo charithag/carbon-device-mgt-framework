@@ -29,8 +29,6 @@ import java.util.Map;
 //TODO :
 public class PIPDevice {
 
-    /*This will be used to record attributes to which would come from other PDPs*/
-    Map<String, Object> attributes;
     private Device device;
     private DeviceType deviceType;
     private DeviceIdentifier deviceIdentifier;
@@ -40,6 +38,9 @@ public class PIPDevice {
     private String latitude;
     private String longitude;
     private Timestamp timestamp;
+
+    /*This will be used to record attributes to which would come from other PDPs*/
+    Map<String, Object> attributes;
 
     public Device getDevice() {
         return device;

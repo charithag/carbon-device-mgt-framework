@@ -168,7 +168,7 @@ public class ProfileOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId,
-                                                                    Operation.Status status) throws OperationManagementDAOException {
+            Operation.Status status) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;

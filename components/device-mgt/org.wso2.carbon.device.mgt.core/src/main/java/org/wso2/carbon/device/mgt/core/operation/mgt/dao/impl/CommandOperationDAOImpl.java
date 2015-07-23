@@ -131,7 +131,7 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId,
-                                                                    Operation.Status status) throws OperationManagementDAOException {
+            Operation.Status status) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -161,11 +161,11 @@ public class CommandOperationDAOImpl extends OperationDAOImpl {
                 commandOperationList.add(commandOperation);
             }
 
-            for (CommandOperation cmOperation : commandOperationList) {
-                operation = super.getOperation(cmOperation.getId());
-                operation.setEnabled(cmOperation.isEnabled());
-                operation.setStatus(status);
-                operationList.add(operation);
+            for(CommandOperation cmOperation:commandOperationList){
+               operation =  super.getOperation(cmOperation.getId());
+               operation.setEnabled(cmOperation.isEnabled());
+               operation.setStatus(status);
+               operationList.add(operation);
             }
 
         } catch (SQLException e) {

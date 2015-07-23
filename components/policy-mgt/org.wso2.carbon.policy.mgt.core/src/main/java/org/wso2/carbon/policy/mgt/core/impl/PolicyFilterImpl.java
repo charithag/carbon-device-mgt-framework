@@ -90,12 +90,12 @@ public class PolicyFilterImpl implements PolicyFilter {
 
         for (Policy policy : policies) {
             List<String> users = policy.getUsers();
-            if (users.contains(PolicyManagementConstants.ANY)) {
+            if(users.contains(PolicyManagementConstants.ANY)) {
                 temp.add(policy);
                 continue;
             }
             for (String user : users) {
-                if (username.equalsIgnoreCase(user)) {
+                if(username.equalsIgnoreCase(user)) {
                     temp.add(policy);
                 }
             }

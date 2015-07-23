@@ -23,6 +23,14 @@ public class PolicyMonitoringTaskException extends Exception {
 
     private String policyMonitoingErrorMessage;
 
+    public String getPolicyMonitoingErrorMessage() {
+        return policyMonitoingErrorMessage;
+    }
+
+    public void setPolicyMonitoingErrorMessage(String policyMonitoingErrorMessage) {
+        this.policyMonitoingErrorMessage = policyMonitoingErrorMessage;
+    }
+
     public PolicyMonitoringTaskException(String message) {
         super(message);
         setPolicyMonitoingErrorMessage(message);
@@ -44,14 +52,6 @@ public class PolicyMonitoringTaskException extends Exception {
 
     public PolicyMonitoringTaskException(Throwable cause) {
         super(cause);
-    }
-
-    public String getPolicyMonitoingErrorMessage() {
-        return policyMonitoingErrorMessage;
-    }
-
-    public void setPolicyMonitoingErrorMessage(String policyMonitoingErrorMessage) {
-        this.policyMonitoingErrorMessage = policyMonitoingErrorMessage;
     }
 
 }

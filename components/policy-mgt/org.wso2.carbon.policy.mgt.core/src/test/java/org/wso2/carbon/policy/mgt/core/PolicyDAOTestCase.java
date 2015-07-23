@@ -21,6 +21,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.Feature;
@@ -36,24 +39,55 @@ import org.wso2.carbon.policy.mgt.core.mgt.impl.PolicyManagerImpl;
 import org.wso2.carbon.policy.mgt.core.mgt.impl.ProfileManagerImpl;
 import org.wso2.carbon.policy.mgt.core.util.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
-    private static final Log log = LogFactory.getLog(PolicyDAOTestCase.class);
     private List<Feature> featureList;
     private List<ProfileFeature> profileFeatureList;
     private Profile profile;
     private Policy policy;
     private List<Device> devices;
+    private static final Log log = LogFactory.getLog(PolicyDAOTestCase.class);
 
     @BeforeClass
     @Override
     public void init() throws Exception {
         initDatSource();
         System.setProperty("GetTenantIDForTest", "Super");
+        this.setUp();
+
+    }
+
+    public void setUp() throws Exception {
+
+
+        if (System.getProperty("carbon.home") == null) {
+            File file = new File("src/test/resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../../../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+        }
+
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
+                .SUPER_TENANT_DOMAIN_NAME);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
     }
 
     @Test
@@ -67,11 +101,11 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     public void addDevice() throws DeviceManagementDAOException {
 
         DeviceDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceDAO();
-        EnrolmentDAO enrolmentDAO = DeviceManagementDAOFactory.getEnrollmentDAO();
+        EnrolmentDAO enrolmentDAO  = DeviceManagementDAOFactory.getEnrollmentDAO();
         DeviceType type = DeviceTypeCreator.getDeviceType();
         devices = DeviceCreator.getDeviceList(type);
         for (Device device : devices) {
-            int id = deviceTypeDAO.addDevice(type.getId(), device, -1234);
+           int id = deviceTypeDAO.addDevice(type.getId(), device, -1234);
             enrolmentDAO.addEnrollment(id, device.getEnrolmentInfo(), -1234);
         }
     }
@@ -99,8 +133,10 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("addProfileFeatures"))
-    public void addPolicy() throws PolicyManagementException {
-
+    public void addPolicy() throws PolicyManagementException, ProfileManagementException {
+        ProfileManager profileManager = new ProfileManagerImpl();
+        profile = ProfileCreator.getProfile(featureList);
+        profileManager.addProfile(profile);
         PolicyManager policyManager = new PolicyManagerImpl();
         policy = PolicyCreator.createPolicy(profile);
         policyManager.addPolicy(policy);
@@ -135,8 +171,10 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("addPolicyToDevice"))
-    public void addNewPolicy() throws PolicyManagementException {
-
+    public void addNewPolicy() throws PolicyManagementException, ProfileManagementException {
+        ProfileManager profileManager = new ProfileManagerImpl();
+        profile = ProfileCreator.getProfile(featureList);
+        profileManager.addProfile(profile);
         PolicyManager policyManager = new PolicyManagerImpl();
         policy = PolicyCreator.createPolicy2(profile);
         policyManager.addPolicy(policy);
@@ -144,8 +182,10 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
 
 
     @Test(dependsOnMethods = ("addPolicyToDevice"))
-    public void addThirdPolicy() throws PolicyManagementException {
-
+    public void addThirdPolicy() throws PolicyManagementException, ProfileManagementException {
+        ProfileManager profileManager = new ProfileManagerImpl();
+        profile = ProfileCreator.getProfile(featureList);
+        profileManager.addProfile(profile);
         PolicyManager policyManager = new PolicyManagerImpl();
         policy = PolicyCreator.createPolicy4(profile);
         policyManager.addPolicy(policy);
@@ -239,7 +279,10 @@ public class PolicyDAOTestCase extends BasePolicyManagementDAOTest {
     }
 
     @Test(dependsOnMethods = ("getRoleRelatedPolicy"))
-    public void addSecondPolicy() throws PolicyManagementException {
+    public void addSecondPolicy() throws PolicyManagementException, ProfileManagementException {
+        ProfileManager profileManager = new ProfileManagerImpl();
+        profile = ProfileCreator.getProfile(featureList);
+        profileManager.addProfile(profile);
         PolicyManager policyManager = new PolicyManagerImpl();
         policy = PolicyCreator.createPolicy3(profile);
         policyManager.addPolicy(policy);

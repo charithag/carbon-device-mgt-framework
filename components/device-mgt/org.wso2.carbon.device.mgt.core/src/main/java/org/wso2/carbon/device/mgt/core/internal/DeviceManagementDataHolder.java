@@ -33,7 +33,6 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class DeviceManagementDataHolder {
 
-    private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
     private RealmService realmService;
     private TenantManager tenantManager;
     private DeviceManagementProviderService deviceManagerProvider;
@@ -45,6 +44,8 @@ public class DeviceManagementDataHolder {
     private AppManagementConfig appManagerConfig;
     private OperationManager operationManager;
     private ConfigurationContextService configurationContextService;
+
+    private static DeviceManagementDataHolder thisInstance = new DeviceManagementDataHolder();
 
     private DeviceManagementDataHolder() {
     }
@@ -62,15 +63,15 @@ public class DeviceManagementDataHolder {
         this.setTenantManager(realmService);
     }
 
-    public TenantManager getTenantManager() {
-        return tenantManager;
-    }
-
     private void setTenantManager(RealmService realmService) {
         if (realmService == null) {
             throw new IllegalStateException("Realm service is not initialized properly");
         }
         this.tenantManager = realmService.getTenantManager();
+    }
+
+    public TenantManager getTenantManager() {
+        return tenantManager;
     }
 
     public DeviceManagementProviderService getDeviceManagementProvider() {

@@ -18,6 +18,8 @@
  */
 package org.wso2.carbon.device.mgt.core.dao;
 
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+
 import java.util.List;
 
 public interface ApplicationMappingDAO {

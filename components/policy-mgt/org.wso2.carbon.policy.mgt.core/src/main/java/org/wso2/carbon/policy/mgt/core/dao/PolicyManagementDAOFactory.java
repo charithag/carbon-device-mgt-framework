@@ -20,6 +20,7 @@ package org.wso2.carbon.policy.mgt.core.dao;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.policy.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.policy.mgt.core.config.datasource.JNDILookupDefinition;
 import org.wso2.carbon.policy.mgt.core.dao.impl.FeatureDAOImpl;
@@ -36,8 +37,8 @@ import java.util.List;
 
 public class PolicyManagementDAOFactory {
 
-    private static final Log log = LogFactory.getLog(PolicyManagementDAOFactory.class);
     private static DataSource dataSource;
+    private static final Log log = LogFactory.getLog(PolicyManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static void init(DataSourceConfig config) {

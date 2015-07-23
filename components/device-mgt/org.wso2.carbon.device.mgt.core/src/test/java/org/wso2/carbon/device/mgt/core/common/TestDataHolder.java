@@ -31,7 +31,7 @@ public class TestDataHolder {
     public static Integer SUPER_TENANT_ID = -1234;
     public static String initialDeviceIdentifier = "12345";
 
-    public static Device generateDummyDeviceData(String deviceType) {
+    public static Device generateDummyDeviceData(String deviceType){
 
         Device device = new Device();
         EnrolmentInfo enrolmentInfo = new EnrolmentInfo();
@@ -47,17 +47,17 @@ public class TestDataHolder {
         return device;
     }
 
-    public static DeviceType generateDeviceTypeData(String devTypeName) {
+    public static DeviceType generateDeviceTypeData(String devTypeName){
         DeviceType deviceType = new DeviceType();
         deviceType.setName(devTypeName);
         return deviceType;
     }
 
-    public static Application generateApplicationDummyData(String appIdentifier) {
+    public static Application generateApplicationDummyData(String appIdentifier){
 
         Application application = new Application();
         Properties properties = new Properties();
-        properties.setProperty("test1", "testVal");
+        properties.setProperty("test1","testVal");
 
         application.setName("SimpleCalculator");
         application.setCategory("TestCategory");

@@ -55,7 +55,7 @@ public class DeviceManagementPluginRepository {
         return providers.get(type);
     }
 
-    public Collection<DeviceManagementService> getDeviceManagementProviders() {
+    public Collection<DeviceManagementService> getDeviceManagementProviders(){
         return providers.values();
     }
 

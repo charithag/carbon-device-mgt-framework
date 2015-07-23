@@ -23,7 +23,7 @@ public class Device {
 
 	private int id;
     private String name;
-    private String type;
+	private String type;
 	private String description;
 	private String deviceIdentifier;
 	private int groupId;
@@ -31,8 +31,7 @@ public class Device {
     private List<Feature> features;
     private List<Device.Property> properties;
 
-    public Device() {
-    }
+    public Device() {}
 
     public Device(String name, String type, String description, String deviceId, EnrolmentInfo enrolmentInfo,
                   List<Feature> features, List<Property> properties) {
@@ -57,13 +56,13 @@ public class Device {
         this.properties = properties;
     }
 
-    public int getId() {
-        return id;
-    }
+	public int getId() {
+		return id;
+	}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
     public String getName() {
         return name;
@@ -81,13 +80,13 @@ public class Device {
         this.type = type;
     }
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	public String getDeviceIdentifier() {
 		return deviceIdentifier;
@@ -129,21 +128,6 @@ public class Device {
 		this.groupId = groupId;
 	}
 
-    @Override
-    public String toString() {
-        return "Device[" +
-                "name=" + name + ";" +
-                "type=" + type + ";" +
-                "description=" + description + ";" +
-                "identifier=" + deviceIdentifier + ";" +
-//                "EnrolmentInfo[" +
-//                "owner=" + enrolmentInfo.getOwner() + ";" +
-//                "ownership=" + enrolmentInfo.getOwnership() + ";" +
-//                "status=" + enrolmentInfo.getStatus() + ";" +
-//                "]" +
-                "]";
-    }
-
 	public static class Property {
 
 		private String name;
@@ -165,5 +149,20 @@ public class Device {
 			this.value = value;
 		}
 	}
+
+    @Override
+    public String toString() {
+        return "Device[" +
+                "name=" + name + ";" +
+                "type=" + type + ";" +
+                "description=" + description + ";" +
+                "identifier=" + deviceIdentifier + ";" +
+//                "EnrolmentInfo[" +
+//                "owner=" + enrolmentInfo.getOwner() + ";" +
+//                "ownership=" + enrolmentInfo.getOwnership() + ";" +
+//                "status=" + enrolmentInfo.getStatus() + ";" +
+//                "]" +
+                "]";
+    }
 
 }

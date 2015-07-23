@@ -22,6 +22,7 @@ import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.common.EnrolmentInfo.Status;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
 
 import java.util.List;
 
@@ -53,13 +54,14 @@ public interface DeviceDAO {
     int addEnrollment(Device device, int tenantId) throws DeviceManagementDAOException;
 
     boolean setEnrolmentStatus(DeviceIdentifier deviceId, String currentOwner, Status status,
-                               int tenantId) throws DeviceManagementDAOException;
+                      int tenantId) throws DeviceManagementDAOException;
 
     Status getEnrolmentStatus(DeviceIdentifier deviceId, String currentOwner,
                               int tenantId) throws DeviceManagementDAOException;
 
     EnrolmentInfo getEnrolment(DeviceIdentifier deviceId, String currentUser,
                                int tenantId) throws DeviceManagementDAOException;
+
 
     List<Device> getDevicesByStatus(EnrolmentInfo.Status status, int tenantId) throws DeviceManagementDAOException;
 }

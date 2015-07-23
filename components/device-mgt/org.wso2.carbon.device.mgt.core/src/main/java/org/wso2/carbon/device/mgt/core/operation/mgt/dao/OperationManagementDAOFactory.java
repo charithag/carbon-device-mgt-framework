@@ -33,8 +33,8 @@ import java.util.List;
 
 public class OperationManagementDAOFactory {
 
-    private static final Log log = LogFactory.getLog(OperationManagementDAOFactory.class);
     private static DataSource dataSource;
+    private static final Log log = LogFactory.getLog(OperationManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
     public static OperationDAO getCommandOperationDAO() {

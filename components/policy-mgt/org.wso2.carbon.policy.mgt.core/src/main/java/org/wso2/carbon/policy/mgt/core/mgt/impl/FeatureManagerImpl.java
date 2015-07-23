@@ -34,8 +34,8 @@ import java.util.List;
 
 public class FeatureManagerImpl implements FeatureManager {
 
-    private static Log log = LogFactory.getLog(FeatureManagerImpl.class);
     private FeatureDAO featureDAO;
+    private static Log log = LogFactory.getLog(FeatureManagerImpl.class);
 
     public FeatureManagerImpl() {
         featureDAO = PolicyManagementDAOFactory.getFeatureDAO();

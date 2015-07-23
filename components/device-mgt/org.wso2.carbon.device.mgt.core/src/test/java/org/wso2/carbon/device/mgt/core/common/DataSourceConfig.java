@@ -28,8 +28,7 @@ public class DataSourceConfig {
     private String user;
     private String password;
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return "DataSourceConfig[" +
                 " Url ='" + url + '\'' +
                 ", DriverClassName ='" + driverClassName + '\'' +

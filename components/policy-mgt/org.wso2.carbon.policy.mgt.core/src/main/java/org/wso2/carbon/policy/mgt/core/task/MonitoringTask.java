@@ -37,9 +37,11 @@ import java.util.Map;
 
 public class MonitoringTask implements Task {
 
-    private static Log log = LogFactory.getLog(MonitoringTask.class);
-    Map<String, String> properties;
     private DeviceTypeDAO deviceTypeDAO;
+    private static Log log = LogFactory.getLog(MonitoringTask.class);
+
+    Map<String, String> properties;
+
 
     @Override
     public void setProperties(Map<String, String> map) {
@@ -54,7 +56,7 @@ public class MonitoringTask implements Task {
     @Override
     public void execute() {
 
-        if (log.isDebugEnabled()) {
+        if(log.isDebugEnabled()) {
             log.debug("Monitoring task started to run.");
         }
 
@@ -74,7 +76,7 @@ public class MonitoringTask implements Task {
                 }
             }
 
-            if (log.isDebugEnabled()) {
+            if(log.isDebugEnabled()) {
                 log.debug("Monitoring task running completed.");
             }
 

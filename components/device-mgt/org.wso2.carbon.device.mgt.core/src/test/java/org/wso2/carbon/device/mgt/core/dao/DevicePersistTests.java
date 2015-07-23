@@ -31,16 +31,14 @@ import org.wso2.carbon.device.mgt.core.common.BaseDeviceManagementTest;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class DevicePersistTests extends BaseDeviceManagementTest {
 
-    private static final Log log = LogFactory.getLog(DevicePersistTests.class);
     DeviceDAO deviceDAO = DeviceManagementDAOFactory.getDeviceDAO();
     DeviceTypeDAO deviceTypeDAO = DeviceManagementDAOFactory.getDeviceTypeDAO();
+
+    private static final Log log = LogFactory.getLog(DevicePersistTests.class);
 
     @BeforeClass
     @Override

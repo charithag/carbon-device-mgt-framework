@@ -24,9 +24,9 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceIdentifier;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
-import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.device.mgt.core.dto.DeviceType;
 import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
+import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.*;
 import org.wso2.carbon.policy.mgt.core.internal.PolicyManagementDataHolder;
 import org.wso2.carbon.policy.mgt.core.mgt.FeatureManager;
@@ -102,7 +102,7 @@ public class PolicyInformationPointImpl implements PolicyInformationPoint {
         if (pipDevice.getRoles() != null) {
             policies = policyFilter.filterRolesBasedPolicies(pipDevice.getRoles(), policies);
         }
-        if (pipDevice.getUserId() != null && !pipDevice.getUserId().isEmpty()) {
+        if(pipDevice.getUserId() != null && !pipDevice.getUserId().isEmpty()) {
             policies = policyFilter.filterUserBasedPolicies(pipDevice.getUserId(), policies);
         }
 

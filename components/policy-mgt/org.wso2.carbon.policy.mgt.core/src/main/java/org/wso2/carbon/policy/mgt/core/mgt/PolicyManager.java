@@ -63,7 +63,7 @@ public interface PolicyManager {
     void addAppliedPolicyFeaturesToDevice(DeviceIdentifier deviceIdentifier, int policyId, List<ProfileFeature>
             profileFeatures) throws PolicyManagementException;
 
-    void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier, Policy policy) throws PolicyManagementException;
+    void addAppliedPolicyToDevice(DeviceIdentifier deviceIdentifier,  Policy policy) throws PolicyManagementException;
 
     boolean checkPolicyAvailable(DeviceIdentifier deviceIdentifier) throws PolicyManagementException;
 

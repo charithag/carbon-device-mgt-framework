@@ -20,6 +20,14 @@ package org.wso2.carbon.device.mgt.common;
 
 public class EnrolmentInfo {
 
+    public enum Status {
+        CREATED, ACTIVE, INACTIVE, UNREACHABLE, UNCLAIMED, SUSPENDED, BLOCKED, REMOVED, DISENROLLMENT_REQUESTED
+    }
+
+    public enum OwnerShip {
+        BYOD, COPE
+    }
+
     private Device device;
     private Long dateOfEnrolment;
     private Long dateOfLastUpdate;
@@ -27,8 +35,7 @@ public class EnrolmentInfo {
     private Status status;
     private String owner;
 
-    public EnrolmentInfo() {
-    }
+    public EnrolmentInfo() {}
 
     public EnrolmentInfo(Device device, String owner, OwnerShip ownership, Status status) {
         this.device = device;
@@ -83,14 +90,6 @@ public class EnrolmentInfo {
 
     public void setDevice(Device device) {
         this.device = device;
-    }
-
-    public enum Status {
-        CREATED, ACTIVE, INACTIVE, UNREACHABLE, UNCLAIMED, SUSPENDED, BLOCKED, REMOVED, DISENROLLMENT_REQUESTED
-    }
-
-    public enum OwnerShip {
-        BYOD, COPE
     }
 
 }

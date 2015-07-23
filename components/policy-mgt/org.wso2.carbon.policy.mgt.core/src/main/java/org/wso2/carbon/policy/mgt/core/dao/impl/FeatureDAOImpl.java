@@ -20,6 +20,7 @@ package org.wso2.carbon.policy.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.wso2.carbon.device.mgt.common.Feature;
 import org.wso2.carbon.policy.mgt.common.Profile;
 import org.wso2.carbon.policy.mgt.common.ProfileFeature;
@@ -248,6 +249,28 @@ public class FeatureDAOImpl implements FeatureDAO {
             String query = "DELETE FROM DM_PROFILE_FEATURES WHERE PROFILE_ID = ?";
             stmt = conn.prepareStatement(query);
             stmt.setInt(1, profile.getProfileId());
+            stmt.executeUpdate();
+            return true;
+
+        } catch (SQLException e) {
+            String msg = "Error occurred while deleting the feature related to a profile.";
+            log.error(msg);
+            throw new FeatureManagerDAOException(msg, e);
+        } finally {
+            PolicyManagementDAOUtil.cleanupResources(stmt, null);
+        }
+    }
+
+    @Override
+    public boolean deleteFeaturesOfProfile(int profileId) throws FeatureManagerDAOException {
+        Connection conn;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = this.getConnection();
+            String query = "DELETE FROM DM_PROFILE_FEATURES WHERE PROFILE_ID = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, profileId);
             stmt.executeUpdate();
             return true;
 

@@ -33,17 +33,17 @@ import java.util.List;
 
 public class DeviceManagementDAOFactory {
 
-	private static final Log log = LogFactory.getLog(DeviceManagementDAOFactory.class);
 	private static DataSource dataSource;
+	private static final Log log = LogFactory.getLog(DeviceManagementDAOFactory.class);
     private static ThreadLocal<Connection> currentConnection = new ThreadLocal<Connection>();
 
 	public static DeviceDAO getDeviceDAO() {
-        return new DeviceDAOImpl();
-    }
+		return new DeviceDAOImpl();
+	}
 
 	public static DeviceTypeDAO getDeviceTypeDAO() {
-        return new DeviceTypeDAOImpl();
-    }
+		return new DeviceTypeDAOImpl();
+	}
 
     public static EnrolmentDAO getEnrollmentDAO() {
         return new EnrolmentDAOImpl();
@@ -140,7 +140,7 @@ public class DeviceManagementDAOFactory {
 
 
     /**
-     * Resolve data source from the data source definition
+	 * Resolve data source from the data source definition
 	 *
 	 * @param config data source configuration
 	 * @return data source resolved from the data source definition

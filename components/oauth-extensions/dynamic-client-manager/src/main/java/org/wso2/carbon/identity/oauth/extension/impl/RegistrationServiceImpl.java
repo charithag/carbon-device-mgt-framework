@@ -29,9 +29,13 @@ import org.wso2.carbon.identity.oauth.extension.RegistrationService;
 import org.wso2.carbon.identity.oauth.extension.profile.RegistrationProfile;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.QueryParam;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

@@ -30,7 +30,6 @@ import java.util.Map;
 
 public class PolicyManagementDataHolder {
 
-    private static PolicyManagementDataHolder thisInstance = new PolicyManagementDataHolder();
     private RealmService realmService;
     private TenantManager tenantManager;
     private PolicyEvaluationPoint policyEvaluationPoint;
@@ -38,6 +37,8 @@ public class PolicyManagementDataHolder {
     private DeviceManagementProviderService deviceManagementService;
     private Map<String, PolicyMonitoringService> policyMonitoringServiceMap;
     private TaskService taskService;
+
+    private static PolicyManagementDataHolder thisInstance = new PolicyManagementDataHolder();
 
     private PolicyManagementDataHolder() {}
 
@@ -54,15 +55,15 @@ public class PolicyManagementDataHolder {
         this.setTenantManager(realmService);
     }
 
-    public TenantManager getTenantManager() {
-        return tenantManager;
-    }
-
     private void setTenantManager(RealmService realmService) {
         if (realmService == null) {
             throw new IllegalStateException("Realm service is not initialized properly");
         }
         this.tenantManager = realmService.getTenantManager();
+    }
+
+    public TenantManager getTenantManager() {
+        return tenantManager;
     }
 
     public PolicyEvaluationPoint getPolicyEvaluationPoint() {

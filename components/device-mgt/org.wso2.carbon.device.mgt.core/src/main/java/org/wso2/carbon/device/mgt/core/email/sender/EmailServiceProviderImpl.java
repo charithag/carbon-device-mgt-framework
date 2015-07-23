@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.common.EmailMessageProperties;
 import org.wso2.carbon.device.mgt.core.config.DeviceConfigurationManager;
+import org.wso2.carbon.device.mgt.core.config.DeviceManagementConfig;
 import org.wso2.carbon.device.mgt.core.config.email.EmailConfigurations;
 import org.wso2.carbon.device.mgt.core.internal.EmailServiceDataHolder;
 import org.wso2.carbon.device.mgt.core.service.EmailService;
@@ -46,9 +47,7 @@ import java.util.concurrent.TimeUnit;
 
 public class EmailServiceProviderImpl implements EmailService {
 
-    private static final String EMAIL_URI_SCHEME = "mailto:";
     private static ThreadPoolExecutor threadPoolExecutor;
-    private static Log log = LogFactory.getLog(EmailServiceProviderImpl.class);
 
     static {
         EmailConfigurations emailConfig =
@@ -59,6 +58,9 @@ public class EmailServiceProviderImpl implements EmailService {
                 emailConfig.getMaxNumOfThread(), emailConfig.getKeepAliveTime(), TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(emailConfig.getThreadQueueCapacity()));
     }
+
+    private static final String EMAIL_URI_SCHEME = "mailto:";
+    private static Log log = LogFactory.getLog(EmailServiceProviderImpl.class);
 
     @Override
     public void sendEmail(EmailMessageProperties emailMessageProperties) throws DeviceManagementException {
@@ -95,6 +97,7 @@ public class EmailServiceProviderImpl implements EmailService {
                 if (configContext != null) {
                     serviceClient = new ServiceClient(configContext, null);
                 } else {
+
                     serviceClient = new ServiceClient();
                 }
                 Options options = new Options();

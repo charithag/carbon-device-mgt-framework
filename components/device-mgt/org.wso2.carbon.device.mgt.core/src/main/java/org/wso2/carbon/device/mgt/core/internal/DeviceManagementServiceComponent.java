@@ -103,20 +103,12 @@ import java.util.List;
  */
 public class DeviceManagementServiceComponent {
 
-    private static final Object LOCK = new Object();
     private static Log log = LogFactory.getLog(DeviceManagementServiceComponent.class);
-    private static List<PluginInitializationListener> listeners = new ArrayList<PluginInitializationListener>();
-    private static List<DeviceManagementService> deviceManagers = new ArrayList<DeviceManagementService>();
     private DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
-    public static void registerPluginInitializationListener(PluginInitializationListener listener) {
-        synchronized (LOCK) {
-            listeners.add(listener);
-            for (DeviceManagementService deviceManagementService : deviceManagers) {
-                listener.registerDeviceManagementService(deviceManagementService);
-            }
-        }
-    }
+    private static final Object LOCK = new Object();
+    private static List<PluginInitializationListener> listeners = new ArrayList<PluginInitializationListener>();
+    private static List<DeviceManagementService> deviceManagers = new ArrayList<DeviceManagementService>();
 
     protected void activate(ComponentContext componentContext) {
         try {
@@ -162,6 +154,15 @@ public class DeviceManagementServiceComponent {
 
     protected void deactivate(ComponentContext componentContext) {
         //do nothing
+    }
+
+    public static void registerPluginInitializationListener(PluginInitializationListener listener) {
+        synchronized (LOCK) {
+            listeners.add(listener);
+            for (DeviceManagementService deviceManagementService : deviceManagers) {
+                listener.registerDeviceManagementService(deviceManagementService);
+            }
+        }
     }
 
     private void initLicenseManager() throws LicenseManagementException {

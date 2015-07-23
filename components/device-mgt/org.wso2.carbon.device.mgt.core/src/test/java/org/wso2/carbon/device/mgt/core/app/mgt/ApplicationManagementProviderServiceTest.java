@@ -28,6 +28,7 @@ import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.core.DeviceManagementPluginRepository;
 import org.wso2.carbon.device.mgt.core.TestDeviceManagementService;
 import org.wso2.carbon.device.mgt.core.api.mgt.ApplicationManagementProviderService;
+import org.wso2.carbon.device.mgt.core.app.mgt.ApplicationManagerProviderServiceImpl;
 import org.wso2.carbon.device.mgt.core.app.mgt.config.AppManagementConfig;
 import org.wso2.carbon.device.mgt.core.common.TestDataHolder;
 
@@ -36,8 +37,8 @@ import java.util.List;
 
 public class ApplicationManagementProviderServiceTest {
 
-    private static final Log log = LogFactory.getLog(ApplicationManagementProviderServiceTest.class);
     private ApplicationManagementProviderService appMgtProvider;
+    private static final Log log = LogFactory.getLog(ApplicationManagementProviderServiceTest.class);
     private DeviceManagementPluginRepository deviceManagementPluginRepository = null;
 
     @BeforeClass
@@ -54,11 +55,11 @@ public class ApplicationManagementProviderServiceTest {
     }
 
     @Test
-    public void updateApplicationTest() {
+    public void updateApplicationTest(){
 
         List<Application> applications = new ArrayList<Application>();
 
-        Application application1 = TestDataHolder.generateApplicationDummyData("org.wso2.app1");
+        Application application1 =  TestDataHolder.generateApplicationDummyData("org.wso2.app1");
         Application application2 = TestDataHolder.generateApplicationDummyData("org.wso2.app2");
         Application application3 = TestDataHolder.generateApplicationDummyData("org.wso2.app3");
         Application application4 = TestDataHolder.generateApplicationDummyData("org.wso2.app4");
@@ -68,7 +69,7 @@ public class ApplicationManagementProviderServiceTest {
         applications.add(application3);
         applications.add(application4);
 
-        Device device = TestDataHolder.initialTestDevice;
+        Device device =  TestDataHolder.initialTestDevice;
         DeviceIdentifier deviceIdentifier = new DeviceIdentifier();
         deviceIdentifier.setId(TestDataHolder.initialDeviceIdentifier);
         deviceIdentifier.setType(device.getType());
@@ -78,7 +79,7 @@ public class ApplicationManagementProviderServiceTest {
 
         try {
             appMgtProvider.updateApplicationListInstalledInDevice(deviceIdentifier, applications);
-        } catch (ApplicationManagementException appMgtEx) {
+        } catch (ApplicationManagementException appMgtEx){
             String msg = "Error occurred while updating app list '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
             log.error(msg, appMgtEx);
             Assert.fail(msg, appMgtEx);
@@ -93,9 +94,9 @@ public class ApplicationManagementProviderServiceTest {
         try {
             appMgtProvider.updateApplicationListInstalledInDevice(deviceIdentifier, applications);
             List<Application> installedApps = appMgtProvider.getApplicationListForDevice(deviceIdentifier);
-            log.info("Number of installed applications:" + installedApps.size());
-            Assert.assertEquals(installedApps.size(), 3, "Num of installed applications should be two");
-        } catch (ApplicationManagementException appMgtEx) {
+            log.info("Number of installed applications:"+installedApps.size());
+            Assert.assertEquals(installedApps.size(),3,"Num of installed applications should be two");
+        } catch (ApplicationManagementException appMgtEx){
             String msg = "Error occurred while updating app list '" + TestDataHolder.TEST_DEVICE_TYPE + "'";
             log.error(msg, appMgtEx);
             Assert.fail(msg, appMgtEx);

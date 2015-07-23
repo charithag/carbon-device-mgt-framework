@@ -30,6 +30,7 @@ import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.Device;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
+import org.wso2.carbon.device.mgt.common.EnrolmentInfo;
 import org.wso2.carbon.device.mgt.core.api.mgt.APIConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.DataSourceConfig;
 import org.wso2.carbon.device.mgt.core.config.datasource.JNDILookupDefinition;
@@ -48,7 +49,11 @@ import java.util.*;
 public final class DeviceManagerUtil {
 
     private static final Log log = LogFactory.getLog(DeviceManagerUtil.class);
-    public static ThreadLocal<Integer> currentTenant = new ThreadLocal<Integer>();
+
+    enum HTTPMethod {
+        GET, POST, DELETE, PUT, OPTIONS
+    }
+
     private static List<HTTPMethod> httpMethods;
 
     static {
@@ -208,10 +213,6 @@ public final class DeviceManagerUtil {
             }
         }
         return uriTemplates;
-    }
-
-    enum HTTPMethod {
-        GET, POST, DELETE, PUT, OPTIONS
     }
 
 

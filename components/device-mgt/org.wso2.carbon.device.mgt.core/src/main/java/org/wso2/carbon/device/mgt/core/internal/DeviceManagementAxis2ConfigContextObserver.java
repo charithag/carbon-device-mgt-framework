@@ -25,7 +25,7 @@ public class DeviceManagementAxis2ConfigContextObserver implements Axis2Configur
 
     @Override
     public void creatingConfigurationContext(int tenantId) {
-
+        
     }
 
     @Override

@@ -18,10 +18,20 @@
  */
 package org.wso2.carbon.device.mgt.core.dto.operation.mgt;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Properties;
 
 public class Operation implements Serializable {
+
+	public enum Type {
+		CONFIG, MESSAGE, INFO, COMMAND, PROFILE , POLICY
+	}
+
+    public enum Status {
+        IN_PROGRESS, PENDING, COMPLETED, ERROR
+    }
 
     private String code;
     private Properties properties;
@@ -112,14 +122,6 @@ public class Operation implements Serializable {
 
     public void setOperationResponse(Object operationResponse) {
         this.operationResponse = operationResponse;
-    }
-
-    public enum Type {
-        CONFIG, MESSAGE, INFO, COMMAND, PROFILE, POLICY
-    }
-
-    public enum Status {
-        IN_PROGRESS, PENDING, COMPLETED, ERROR
     }
 
 }

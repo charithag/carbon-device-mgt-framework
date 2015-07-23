@@ -24,34 +24,34 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "PolicyConfiguration")
 public class PolicyConfiguration {
 
-    private String monitoringClass;
-    private int maxRetries;
-    private int minRetriesToMarkUnreachable;
+	private String monitoringClass;
+	private int maxRetries;
+	private int minRetriesToMarkUnreachable;
 
-    @XmlElement(name = "monitoringClass", required = true)
-    public String getMonitoringClass() {
-        return monitoringClass;
-    }
+	@XmlElement(name = "monitoringClass", required = true)
+	public String getMonitoringClass() {
+		return monitoringClass;
+	}
 
-    public void setMonitoringClass(String monitoringClass) {
-        this.monitoringClass = monitoringClass;
-    }
+	public void setMonitoringClass(String monitoringClass) {
+		this.monitoringClass = monitoringClass;
+	}
 
-    @XmlElement(name = "maxRetries", required = true)
-    public int getMaxRetries() {
-        return maxRetries;
-    }
+	@XmlElement(name = "maxRetries", required = true)
+	public int getMaxRetries() {
+		return maxRetries;
+	}
 
-    public void setMaxRetries(int maxRetries) {
-        this.maxRetries = maxRetries;
-    }
+	public void setMaxRetries(int maxRetries) {
+		this.maxRetries = maxRetries;
+	}
 
-    @XmlElement(name = "minRetriesToMarkUnreachable", required = true)
-    public int getMinRetriesToMarkUnreachable() {
-        return minRetriesToMarkUnreachable;
-    }
+	@XmlElement(name = "minRetriesToMarkUnreachable", required = true)
+	public int getMinRetriesToMarkUnreachable() {
+		return minRetriesToMarkUnreachable;
+	}
 
-    public void setMinRetriesToMarkUnreachable(int minRetriesToMarkUnreachable) {
-        this.minRetriesToMarkUnreachable = minRetriesToMarkUnreachable;
-    }
+	public void setMinRetriesToMarkUnreachable(int minRetriesToMarkUnreachable) {
+		this.minRetriesToMarkUnreachable = minRetriesToMarkUnreachable;
+	}
 }

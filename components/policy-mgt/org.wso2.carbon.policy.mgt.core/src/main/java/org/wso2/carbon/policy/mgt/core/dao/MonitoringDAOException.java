@@ -19,9 +19,17 @@
 
 package org.wso2.carbon.policy.mgt.core.dao;
 
-public class MonitoringDAOException extends Exception {
+public class MonitoringDAOException extends Exception{
 
     private String monitoringDAOErrorMessage;
+
+    public String getMonitoringDAOErrorMessage() {
+        return monitoringDAOErrorMessage;
+    }
+
+    public void setMonitoringDAOErrorMessage(String monitoringDAOErrorMessage) {
+        this.monitoringDAOErrorMessage = monitoringDAOErrorMessage;
+    }
 
     public MonitoringDAOException(String message) {
         super(message);
@@ -44,14 +52,6 @@ public class MonitoringDAOException extends Exception {
 
     public MonitoringDAOException(Throwable cause) {
         super(cause);
-    }
-
-    public String getMonitoringDAOErrorMessage() {
-        return monitoringDAOErrorMessage;
-    }
-
-    public void setMonitoringDAOErrorMessage(String monitoringDAOErrorMessage) {
-        this.monitoringDAOErrorMessage = monitoringDAOErrorMessage;
     }
 
 }

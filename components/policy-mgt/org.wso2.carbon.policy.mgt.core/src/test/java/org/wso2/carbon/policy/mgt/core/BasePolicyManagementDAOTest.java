@@ -40,8 +40,8 @@ import java.sql.Statement;
 
 public abstract class BasePolicyManagementDAOTest {
 
-    private static final Log log = LogFactory.getLog(BasePolicyManagementDAOTest.class);
     private DataSource dataSource;
+    private static final Log log = LogFactory.getLog(BasePolicyManagementDAOTest.class);
 
     @BeforeSuite
     public void setupDataSource() throws Exception {

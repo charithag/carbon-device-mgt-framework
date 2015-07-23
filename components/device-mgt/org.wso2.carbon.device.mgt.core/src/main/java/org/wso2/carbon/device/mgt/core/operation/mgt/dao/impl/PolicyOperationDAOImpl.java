@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.Operation;
 import org.wso2.carbon.device.mgt.core.dto.operation.mgt.PolicyOperation;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOException;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.operation.mgt.dao.OperationManagementDAOUtil;
@@ -171,7 +172,7 @@ public class PolicyOperationDAOImpl extends OperationDAOImpl {
 
     @Override
     public List<? extends Operation> getOperationsByDeviceAndStatus(int deviceId,
-                                                                    Operation.Status status) throws OperationManagementDAOException {
+            Operation.Status status) throws OperationManagementDAOException {
 
         PreparedStatement stmt = null;
         ResultSet rs = null;

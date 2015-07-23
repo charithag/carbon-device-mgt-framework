@@ -37,10 +37,6 @@ public class ConfigOperation extends Operation {
         properties.add(new Property(name, value, type));
     }
 
-    public Type getType() {
-        return Type.CONFIG;
-    }
-
     public static class Property {
         private String name;
         private Object value;
@@ -75,6 +71,10 @@ public class ConfigOperation extends Operation {
         public void setType(Class<?> type) {
             this.type = type;
         }
+    }
+
+    public Type getType() {
+        return Type.CONFIG;
     }
 
 }

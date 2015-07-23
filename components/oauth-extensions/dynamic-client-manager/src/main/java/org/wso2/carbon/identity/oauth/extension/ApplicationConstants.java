@@ -21,6 +21,9 @@ package org.wso2.carbon.identity.oauth.extension;
 public final class ApplicationConstants {
 
     public static class ClientMetadata {
+        private ClientMetadata() {
+            throw new AssertionError();
+        }
         public static final String OAUTH_CLIENT_ID = "client_id"; //this means consumer key
         public static final String OAUTH_CLIENT_SECRET = "client_secret";
         public static final String OAUTH_REDIRECT_URIS = "redirect_uris";
@@ -47,10 +50,6 @@ public final class ApplicationConstants {
         public static final String OAUTH_CLIENT_USERNAME = "username";
         public static final String OAUTH_CLIENT_APPLICATION = "application";
         public static final String VALIDITY_PERIOD = "validityPeriod";
-
-        private ClientMetadata() {
-            throw new AssertionError();
-        }
     }
 
 }

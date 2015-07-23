@@ -26,6 +26,8 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.w3c.dom.Document;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.device.mgt.common.DeviceManagementException;
 import org.wso2.carbon.device.mgt.core.TestUtils;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
@@ -43,13 +45,14 @@ import java.sql.Statement;
 
 public abstract class BaseDeviceManagementTest {
 
-    private static final Log log = LogFactory.getLog(BaseDeviceManagementTest.class);
     private DataSource dataSource;
+    private static final Log log = LogFactory.getLog(BaseDeviceManagementTest.class);
 
     @BeforeSuite
     public void setupDataSource() throws Exception {
         this.initDatSource();
         this.initSQLScript();
+        this.initializeCarbonContext();
     }
 
     public void initDatSource() throws Exception {
@@ -67,6 +70,32 @@ public abstract class BaseDeviceManagementTest {
         properties.setUsername(config.getUser());
         properties.setPassword(config.getPassword());
         return new org.apache.tomcat.jdbc.pool.DataSource(properties);
+    }
+
+    private void initializeCarbonContext(){
+
+        if (System.getProperty("carbon.home") == null) {
+            File file = new File("src/test/resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+            file = new File("../../../resources/carbon-home");
+            if (file.exists()) {
+                System.setProperty("carbon.home", file.getAbsolutePath());
+            }
+        }
+
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(MultitenantConstants
+                .SUPER_TENANT_DOMAIN_NAME);
+        PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantId(MultitenantConstants.SUPER_TENANT_ID);
     }
 
     private DataSourceConfig readDataSourceConfig() throws DeviceManagementException {
@@ -129,7 +158,7 @@ public abstract class BaseDeviceManagementTest {
         }
     }
 
-    private void cleanApplicationMappingData(Connection conn) throws SQLException {
+    private void cleanApplicationMappingData(Connection conn) throws SQLException{
         PreparedStatement stmt = null;
         try {
             stmt = conn.prepareStatement("DELETE FROM DM_DEVICE_APPLICATION_MAPPING");
@@ -141,7 +170,7 @@ public abstract class BaseDeviceManagementTest {
         }
     }
 
-    private void cleanApplicationData(Connection conn) throws SQLException {
+    private void cleanApplicationData(Connection conn) throws SQLException{
         PreparedStatement stmt = null;
         try {
             stmt = conn.prepareStatement("DELETE FROM DM_APPLICATION");

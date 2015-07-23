@@ -26,12 +26,12 @@ public class ApplicationManagerFactory {
 
     private static DeviceManagementPluginRepository pluginRepository = new DeviceManagementPluginRepository();
 
-    public static ApplicationManager getConnector(AppManagementConfig config) {
-        return new ApplicationManagerProviderServiceImpl(config, pluginRepository);
-    }
-
     public DeviceManagementPluginRepository getPluginRepository() {
         return pluginRepository;
+    }
+
+    public static ApplicationManager getConnector(AppManagementConfig config) {
+        return new ApplicationManagerProviderServiceImpl(config, pluginRepository);
     }
 
 }

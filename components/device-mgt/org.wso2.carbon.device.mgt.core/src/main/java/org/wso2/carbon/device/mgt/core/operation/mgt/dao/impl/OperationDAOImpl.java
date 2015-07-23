@@ -135,9 +135,9 @@ public class OperationDAOImpl implements OperationDAO {
 
         } catch (SQLException e) {
             throw new OperationManagementDAOException("Error occurred while inserting operation response", e);
-        } catch (IOException e) {
+        }catch (IOException e) {
             throw new OperationManagementDAOException("Error occurred while serializing policy operation object", e);
-        } finally {
+        }finally {
             if (bao != null) {
                 try {
                     bao.close();

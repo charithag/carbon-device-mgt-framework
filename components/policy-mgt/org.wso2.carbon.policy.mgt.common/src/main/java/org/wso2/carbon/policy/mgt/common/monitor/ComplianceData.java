@@ -26,10 +26,10 @@ import java.util.List;
 
 public class ComplianceData {
 
-    List<ComplianceFeature> complianceFeatures;
     private int id;
     private int deviceId;
     private int policyId;
+    List<ComplianceFeature> complianceFeatures;
     private boolean status;
     private Timestamp lastRequestedTime;
     private Timestamp lastSucceededTime;

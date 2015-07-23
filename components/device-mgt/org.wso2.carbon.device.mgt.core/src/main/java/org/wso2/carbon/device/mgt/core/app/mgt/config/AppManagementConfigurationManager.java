@@ -29,11 +29,12 @@ import java.io.File;
 
 public class AppManagementConfigurationManager {
 
+	private AppManagementConfig appManagementConfig;
+	private static AppManagementConfigurationManager appManagementConfigManager;
+
 	private static final String APP_MANAGER_CONFIG_FILE = "app-management-config.xml";
 	private static final String APP_MANAGER_CONFIG_PATH =
 			CarbonUtils.getEtcCarbonConfigDirPath() + File.separator + APP_MANAGER_CONFIG_FILE;
-	private static AppManagementConfigurationManager appManagementConfigManager;
-	private AppManagementConfig appManagementConfig;
 
 	public static AppManagementConfigurationManager getInstance() {
 		if (appManagementConfigManager == null) {

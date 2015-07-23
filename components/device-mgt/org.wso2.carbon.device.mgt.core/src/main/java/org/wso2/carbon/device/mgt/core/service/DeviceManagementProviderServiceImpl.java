@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.device.mgt.common.*;
+import org.wso2.carbon.device.mgt.common.configuration.mgt.TenantConfiguration;
 import org.wso2.carbon.device.mgt.common.license.mgt.License;
 import org.wso2.carbon.device.mgt.common.license.mgt.LicenseManagementException;
 import org.wso2.carbon.device.mgt.common.operation.mgt.Operation;
@@ -49,12 +50,12 @@ import java.util.List;
 public class DeviceManagementProviderServiceImpl implements DeviceManagementProviderService,
         PluginInitializationListener {
 
-    private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
     private DeviceDAO deviceDAO;
     private DeviceTypeDAO deviceTypeDAO;
     private EnrolmentDAO enrolmentDAO;
     private DeviceManagementPluginRepository pluginRepository;
-    private boolean isTest = false;
+
+    private static Log log = LogFactory.getLog(DeviceManagementProviderServiceImpl.class);
     private int tenantId;
 
     public DeviceManagementProviderServiceImpl() {
@@ -69,13 +70,11 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
 
     /**
      * This constructor calls from unit tests
-     *
      * @param pluginRepo
      */
-    DeviceManagementProviderServiceImpl(DeviceManagementPluginRepository pluginRepo, boolean test) {
+    DeviceManagementProviderServiceImpl(DeviceManagementPluginRepository pluginRepo, boolean test){
         this.pluginRepository = pluginRepo;
         initDataAccessObjects();
-        isTest = test;
     }
 
     private void initDataAccessObjects() {
@@ -87,6 +86,26 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
     @Override
     public FeatureManager getFeatureManager() {
         return null;
+    }
+
+    @Override
+    public boolean saveConfiguration(TenantConfiguration configuration)
+            throws DeviceManagementException {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementService(configuration.getType()).getDeviceManager();
+        return dms.saveConfiguration(configuration);
+    }
+
+    @Override
+    public TenantConfiguration getConfiguration() throws DeviceManagementException {
+        return null;
+    }
+
+    @Override
+    public TenantConfiguration getConfiguration(String type) throws DeviceManagementException {
+        DeviceManager dms =
+                this.getPluginRepository().getDeviceManagementService(type).getDeviceManager();
+        return dms.getConfiguration();
     }
 
     @Override
@@ -108,7 +127,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             } else {
                 device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.ACTIVE);
             }
-            int tenantId = getTenantId();
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
             DeviceManagementDAOFactory.beginTransaction();
 
@@ -140,6 +159,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         }
         return status;
     }
+
 
 
     @Override
@@ -180,7 +200,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         DeviceManager dms =
                 this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
         try {
-            Device device = deviceDAO.getDevice(deviceId, tenantId);
+            Device device = deviceDAO.getDevice(deviceId,tenantId);
             DeviceType deviceType = deviceTypeDAO.getDeviceType(device.getType());
 
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
@@ -188,8 +208,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
 
         } catch (DeviceManagementDAOException e) {
-            String errorMsg = "Error occurred while fetch device for device Identifier:";
-            log.error(errorMsg + deviceId.toString(), e);
+            String errorMsg =  "Error occurred while fetch device for device Identifier:";
+            log.error(errorMsg + deviceId.toString(),e);
             throw new DeviceManagementException(errorMsg, e);
 
         }
@@ -320,7 +340,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
             messageBody = messageBody.trim() + System.getProperty("line.separator") +
                     System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
@@ -377,8 +397,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
             messageBody = messageBody.trim().replaceAll("\\{" + EmailConstants.EnrolmentEmailConstants
-                            .USERNAME
-                            + "\\}",
+                    .USERNAME
+                    + "\\}",
                     URLEncoder.encode(emailMessageProperties.getUserName(), EmailConstants.EnrolmentEmailConstants
                             .ENCODED_SCHEME));
 
@@ -387,7 +407,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
                             .ENCODED_SCHEME));
 
             messageBody = messageBody + System.getProperty("line.separator") + url.replaceAll("\\{"
-                            + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
+                    + EmailConstants.EnrolmentEmailConstants.DOWNLOAD_URL + "\\}",
                     URLDecoder.decode(emailMessageProperties.getEnrolmentUrl(),
                             EmailConstants.EnrolmentEmailConstants.ENCODED_SCHEME));
 
@@ -424,12 +444,16 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             }
         }
         if (device != null) {
-            DeviceManager dms =
-                    this.getPluginRepository().getDeviceManagementService(deviceId.getType()).getDeviceManager();
-            Device pluginSpecificInfo = dms.getDevice(deviceId);
-            if (pluginSpecificInfo != null) {
-                device.setFeatures(pluginSpecificInfo.getFeatures());
-                device.setProperties(pluginSpecificInfo.getProperties());
+            // The changes made here to prevent unit tests getting failed. They failed because when running the unit
+            // tests there is no osgi services. So getDeviceManager() returns a null.
+          DeviceManagementService service =  this.getPluginRepository().getDeviceManagementService(deviceId.getType());
+            if(service != null) {
+                DeviceManager dms = service.getDeviceManager();
+                Device pluginSpecificInfo = dms.getDevice(deviceId);
+                if (pluginSpecificInfo != null) {
+                    device.setFeatures(pluginSpecificInfo.getFeatures());
+                    device.setProperties(pluginSpecificInfo.getProperties());
+                }
             }
         }
         return device;
@@ -624,7 +648,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         String[] users;
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         try {
-            users = DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
+            users =  DeviceManagementDataHolder.getInstance().getRealmService().getTenantUserRealm(tenantId)
                     .getUserStoreManager().getUserListOfRole(role);
         } catch (UserStoreException e) {
             throw new DeviceManagementException("Error occurred while obtaining the users, who are assigned " +
@@ -720,8 +744,8 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(status);
             deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
-        } catch (DeviceManagementDAOException deviceDaoEx) {
-            String errorMsg = "Error occured update device enrolment status : " + device.getId();
+        }catch (DeviceManagementDAOException deviceDaoEx){
+            String errorMsg = "Error occured update device enrolment status : "+device.getId();
             log.error(errorMsg, deviceDaoEx);
             throw new DeviceManagementException(errorMsg, deviceDaoEx);
         }
@@ -755,14 +779,10 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             DeviceManagementDAOFactory.getConnection();
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
             allDevices = deviceDAO.getDevicesByStatus(status, tenantId);
-
         } catch (DeviceManagementDAOException e) {
-            String errorMsg = "Error occurred while fetching the list of devices that matches to status: '"
-                    + status + "'";
-            log.error(errorMsg, e);
-            throw new DeviceManagementException(errorMsg, e);
+            throw new DeviceManagementException(
+                    "Error occurred while fetching the list of devices that matches to status: '" + status + "'", e);
         } finally {
-
             try {
                 DeviceManagementDAOFactory.closeConnection();
             } catch (DeviceManagementDAOException e) {
@@ -784,18 +804,5 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
         return devices;
     }
 
-
-    private int getTenantId() {
-
-        ThreadLocal<Integer> tenantId = new ThreadLocal<Integer>();
-        int tenant = 0;
-
-        if (isTest) {
-            tenant = DeviceManagerUtil.currentTenant.get();
-        } else {
-            tenant = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-        }
-        return tenant;
-    }
 
 }

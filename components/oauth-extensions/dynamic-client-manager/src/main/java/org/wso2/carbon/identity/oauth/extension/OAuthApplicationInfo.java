@@ -49,6 +49,14 @@ public class OAuthApplicationInfo {
         this.clientSecret = clientSecret;
     }
 
+    public void setClientName(String clientName){
+        this.clientName = clientName;
+    }
+
+    public void setCallBackURL(String callBackURL){
+        this.callBackURL = callBackURL;
+    }
+
     public void addParameter(String name,Object value){
         parameters.put(name,value);
     }
@@ -65,16 +73,8 @@ public class OAuthApplicationInfo {
         return clientName;
     }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
-
     public String getCallBackURL(){
         return callBackURL;
-    }
-
-    public void setCallBackURL(String callBackURL) {
-        this.callBackURL = callBackURL;
     }
 
     public void putAll(Map<String,Object> parameters){

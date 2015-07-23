@@ -20,19 +20,25 @@ package org.wso2.carbon.device.mgt.core.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.device.mgt.common.app.mgt.Application;
+import org.wso2.carbon.device.mgt.common.app.mgt.ApplicationManagementException;
 import org.wso2.carbon.device.mgt.core.dao.ApplicationMappingDAO;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOException;
 import org.wso2.carbon.device.mgt.core.dao.DeviceManagementDAOFactory;
 import org.wso2.carbon.device.mgt.core.dao.util.DeviceManagementDAOUtil;
+import org.wso2.carbon.device.mgt.core.dto.operation.mgt.ProfileOperation;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
 
     private static final Log log = LogFactory.getLog(ApplicationMappingDAOImpl.class);
-
     @Override
     public int addApplicationMapping(int deviceId, int applicationId,
                                      int tenantId) throws DeviceManagementDAOException {
@@ -109,16 +115,16 @@ public class ApplicationMappingDAOImpl implements ApplicationMappingDAO {
                     "APPLICATION_ID = ? AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            for (Integer appId : appIdList) {
+            for(Integer appId:appIdList){
                 stmt.setInt(1, deviceId);
                 stmt.setInt(2, appId);
                 stmt.setInt(3, tenantId);
                 stmt.addBatch();
             }
             stmt.executeBatch();
-        } catch (SQLException e) {
+       } catch (SQLException e) {
             throw new DeviceManagementDAOException("Error occurred while adding device application mapping", e);
-        } finally {
+        }finally {
             DeviceManagementDAOUtil.cleanupResources(stmt, null);
         }
     }
