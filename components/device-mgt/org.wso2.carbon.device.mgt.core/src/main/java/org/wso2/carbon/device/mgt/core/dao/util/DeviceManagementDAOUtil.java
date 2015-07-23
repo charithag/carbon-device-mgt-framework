@@ -62,22 +62,22 @@ public final class DeviceManagementDAOUtil {
 		}
 	}
 
-	public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
-		if (rs != null) {
-			try {
-				rs.close();
-			} catch (SQLException e) {
-				log.warn("Error occurred while closing result set", e);
-			}
-		}
-		if (stmt != null) {
-			try {
-				stmt.close();
-			} catch (SQLException e) {
-				log.warn("Error occurred while closing prepared statement", e);
-			}
-		}
-	}
+    public static void cleanupResources(PreparedStatement stmt, ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while closing result set", e);
+            }
+        }
+        if (stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+                log.warn("Error occurred while closing prepared statement", e);
+            }
+        }
+    }
 
 	/**
 	 * Get id of the current tenant.
