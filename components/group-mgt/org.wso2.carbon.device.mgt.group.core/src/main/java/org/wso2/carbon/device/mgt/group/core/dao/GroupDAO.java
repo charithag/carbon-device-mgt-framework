@@ -69,26 +69,6 @@ public interface GroupDAO {
     List<Group> getAllGroups() throws GroupManagementDAOException;
 
     /**
-     * Get the list of Groups belongs to a user.
-     *
-     * @param username of the user.
-     * @param tenantId of user's tenant
-     * @return List of Groups of the user.
-     * @throws GroupManagementDAOException
-     */
-    List<Group> getGroupsOfUser(String username, int tenantId) throws GroupManagementDAOException;
-
-    /**
-     * Get the count of Group
-     *
-     * @param username of the user.
-     * @param tenantId of user's tenant
-     * @return Group count
-     * @throws GroupManagementDAOException
-     */
-    int getGroupCountOfUser(String username, int tenantId) throws GroupManagementDAOException;
-
-    /**
      * Get the list of Groups that matches with the given Group name.
      *
      * @param groupName of the group.
