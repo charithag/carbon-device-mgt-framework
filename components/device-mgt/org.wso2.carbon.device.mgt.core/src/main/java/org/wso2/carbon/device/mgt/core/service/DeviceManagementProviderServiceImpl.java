@@ -206,6 +206,7 @@ public class DeviceManagementProviderServiceImpl implements DeviceManagementProv
             device.getEnrolmentInfo().setDateOfLastUpdate(new Date().getTime());
             device.getEnrolmentInfo().setStatus(EnrolmentInfo.Status.REMOVED);
             deviceDAO.updateDevice(deviceType.getId(), device, tenantId);
+            enrolmentDAO.updateEnrollment(device.getId(), device.getEnrolmentInfo(), tenantId);
 
         } catch (DeviceManagementDAOException e) {
             String errorMsg =  "Error occurred while fetch device for device Identifier:";

@@ -195,7 +195,7 @@ public class DeviceDAOImpl implements DeviceDAO {
                     "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID " +
                     "FROM DM_ENROLMENT e, (SELECT d.ID, d.DESCRIPTION, d.NAME, d.GROUP_ID, d.DEVICE_IDENTIFICATION, d.OWNER, t.NAME " +
                     "AS DEVICE_TYPE FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_TYPE_ID = t.ID AND t.NAME = ? " +
-                    "AND d.TENANT_ID = ?) d1 WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
+                    "AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, type);
             stmt.setInt(2, tenantId);
@@ -227,7 +227,7 @@ public class DeviceDAOImpl implements DeviceDAO {
                     "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
                     "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
                     "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 " +
-                    "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? AND e.OWNER = ?";
+                    "WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? AND e.OWNER = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, tenantId);
@@ -260,7 +260,7 @@ public class DeviceDAOImpl implements DeviceDAO {
                             "e.DATE_OF_ENROLMENT FROM DM_ENROLMENT e, (SELECT t.NAME AS DEVICE_TYPE, d.ID, d.GROUP_ID, d.DESCRIPTION, " +
                             "d.NAME, d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t " +
                             "WHERE d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?) d1 " +
-                            "WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ? AND d.GROUP_ID = ?";
+                            "WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ? AND d.GROUP_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
             stmt.setInt(2, tenantId);
@@ -333,7 +333,7 @@ public class DeviceDAOImpl implements DeviceDAO {
                     "e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, e.DATE_OF_ENROLMENT, e.ID AS ENROLMENT_ID " +
                     "FROM DM_ENROLMENT e, (SELECT d.ID, d.NAME, d.GROUP_ID, d.DESCRIPTION, t.NAME AS DEVICE_TYPE, " +
                     "d.DEVICE_IDENTIFICATION FROM DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.DEVICE_TYPE_ID = t.ID " +
-                    "AND d.NAME LIKE ? AND d.TENANT_ID = ?) d1 WHERE DEVICE_ID = e.DEVICE_ID AND TENANT_ID = ?";
+                    "AND d.NAME LIKE ? AND d.TENANT_ID = ?) d1 WHERE d1.ID = e.DEVICE_ID AND TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, deviceName + "%");
             stmt.setInt(2, tenantId);
@@ -512,7 +512,7 @@ public class DeviceDAOImpl implements DeviceDAO {
                     "d.DEVICE_IDENTIFICATION, e.OWNER, e.OWNERSHIP, e.STATUS, e.DATE_OF_LAST_UPDATE, " +
                     "e.DATE_OF_ENROLMENT FROM (SELECT e.ID, e.DEVICE_ID, e.OWNER, e.OWNERSHIP, e.STATUS, " +
                     "e.DATE_OF_ENROLMENT, e.DATE_OF_LAST_UPDATE FROM DM_ENROLMENT e WHERE TENANT_ID = ? " +
-                    "AND STATUS = ?) e, DM_DEVICE d, DM_DEVICE_TYPE t WHERE DEVICE_ID = e.DEVICE_ID " +
+                    "AND STATUS = ?) e, DM_DEVICE d, DM_DEVICE_TYPE t WHERE d.ID = e.DEVICE_ID " +
                     "AND d.DEVICE_TYPE_ID = t.ID AND d.TENANT_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, tenantId);
