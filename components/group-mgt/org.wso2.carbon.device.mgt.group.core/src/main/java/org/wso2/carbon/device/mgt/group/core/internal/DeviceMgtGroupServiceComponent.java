@@ -28,8 +28,6 @@ import org.wso2.carbon.device.mgt.core.service.DeviceManagementProviderService;
 import org.wso2.carbon.device.mgt.group.core.dao.GroupManagementDAOFactory;
 import org.wso2.carbon.device.mgt.group.core.providers.GroupManagementServiceProvider;
 import org.wso2.carbon.device.mgt.group.core.providers.GroupManagementServiceProviderImpl;
-import org.wso2.carbon.device.mgt.group.core.service.GroupManagementService;
-import org.wso2.carbon.device.mgt.group.core.service.GroupManagementServiceImpl;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
@@ -65,16 +63,14 @@ public class DeviceMgtGroupServiceComponent {
             DataSourceConfig dsConfig = config.getDeviceManagementConfigRepository().getDataSourceConfig();
             GroupManagementDAOFactory.init(dsConfig);
 
-            GroupManagementServiceProvider groupManagementServiceProvider = new GroupManagementServiceProviderImpl();
-            DeviceMgtGroupDataHolder.getInstance().setGroupManagementServiceProvider(groupManagementServiceProvider);
-
             if (log.isDebugEnabled()) {
                 log.debug("Registering OSGi service Group Management Service");
             }
             /* Registering Group Management service */
             BundleContext bundleContext = componentContext.getBundleContext();
-            bundleContext.registerService(GroupManagementService.class,
-                    new GroupManagementServiceImpl(), null);
+            GroupManagementServiceProvider groupManagementServiceProvider = new GroupManagementServiceProviderImpl();
+            bundleContext.registerService(GroupManagementServiceProvider.class.getName(),
+                    groupManagementServiceProvider, null);
             if (log.isDebugEnabled()) {
                 log.debug("Group management core bundle has been successfully initialized");
             }

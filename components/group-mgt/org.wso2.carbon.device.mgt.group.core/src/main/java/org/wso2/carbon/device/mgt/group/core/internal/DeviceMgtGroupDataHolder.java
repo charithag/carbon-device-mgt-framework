@@ -28,7 +28,6 @@ public class DeviceMgtGroupDataHolder {
     private static DeviceMgtGroupDataHolder thisInstance = new DeviceMgtGroupDataHolder();
     private RealmService realmService;
     private TenantManager tenantManager;
-    private GroupManagementServiceProvider groupManagementServiceProvider;
     private DeviceManagementProviderService deviceManagementService;
 
     private DeviceMgtGroupDataHolder() {
@@ -56,14 +55,6 @@ public class DeviceMgtGroupDataHolder {
     public void setRealmService(RealmService realmService) {
         this.realmService = realmService;
         this.setTenantManager(realmService);
-    }
-
-    public GroupManagementServiceProvider getGroupManagementServiceProvider() {
-        return groupManagementServiceProvider;
-    }
-
-    public void setGroupManagementServiceProvider(GroupManagementServiceProvider groupManagementServiceProvider) {
-        this.groupManagementServiceProvider = groupManagementServiceProvider;
     }
 
     public DeviceManagementProviderService getDeviceManagementService() {
