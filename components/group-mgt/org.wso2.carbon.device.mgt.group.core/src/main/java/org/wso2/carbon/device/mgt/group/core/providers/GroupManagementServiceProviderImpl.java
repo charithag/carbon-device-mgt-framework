@@ -96,7 +96,12 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     @Override
     public Group getGroupById(int groupId) throws GroupManagementException {
         try {
-            return this.groupDAO.getGroupById(groupId);
+            Group group = this.groupDAO.getGroupById(groupId);
+            if (group != null){
+                group.setDeviceCount(getDeviceCountInGroup(group.getId()));
+                group.setUsers(getUsersForGroup(group.getId()));
+            }
+            return group;
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group " + groupId, e);
         }
@@ -106,7 +111,12 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     public Group getGroupByName(String groupName) throws GroupManagementException {
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
-            return this.groupDAO.getGroupByName(groupName, tenantId);
+            Group group = this.groupDAO.getGroupByName(groupName, tenantId);
+            if (group != null){
+                group.setDeviceCount(getDeviceCountInGroup(group.getId()));
+                group.setUsers(getUsersForGroup(group.getId()));
+            }
+            return group;
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while obtaining group " + groupName, e);
         }
@@ -327,8 +337,12 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             device.setGroupId(group.getId());
             DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
         } catch (DeviceManagementException e) {
-            e.printStackTrace();
+            throw new GroupManagementException("Error occurred while adding device in to group", e);
         }
         return false;
+    }
+
+    private int getDeviceCountInGroup(int groupId) throws GroupManagementException {
+        return getAllDevicesInGroup(groupId).size();
     }
 }
