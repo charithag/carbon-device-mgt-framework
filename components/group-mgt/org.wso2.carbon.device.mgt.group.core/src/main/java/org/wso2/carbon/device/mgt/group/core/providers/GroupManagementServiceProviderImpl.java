@@ -1,3 +1,21 @@
+/*
+ *  Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ *
+ */
 package org.wso2.carbon.device.mgt.group.core.providers;
 
 import org.apache.commons.logging.Log;
@@ -81,9 +99,16 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                     removeSharingRoleForGroup(groupId, roleName);
                 }
             }
+            List<Device> groupDevices = getAllDevicesInGroup(groupId);
+            for (Device device : groupDevices){
+                device.setGroupId(0);
+                DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
+            }
             this.groupDAO.deleteGroup(groupId);
             log.info("Group removed: " + group.getName());
             return true;
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while removing device from group", e);
         } catch (GroupManagementDAOException e) {
             throw new GroupManagementException("Error occurred while removing group " +
                     "'" + groupId + "' data", e);
@@ -97,7 +122,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
     public Group getGroupById(int groupId) throws GroupManagementException {
         try {
             Group group = this.groupDAO.getGroupById(groupId);
-            if (group != null){
+            if (group != null) {
                 group.setDeviceCount(getDeviceCountInGroup(group.getId()));
                 group.setUsers(getUsersForGroup(group.getId()));
             }
@@ -112,7 +137,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         try {
             int tenantId = DeviceManagerUtil.getTenantId();
             Group group = this.groupDAO.getGroupByName(groupName, tenantId);
-            if (group != null){
+            if (group != null) {
                 group.setDeviceCount(getDeviceCountInGroup(group.getId()));
                 group.setUsers(getUsersForGroup(group.getId()));
             }
@@ -140,8 +165,7 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
                     }
                 }
             }
-            List<Group> groupList = new ArrayList<>(groups.values());
-            return groupList;
+            return new ArrayList<>(groups.values());
         } catch (UserStoreException e) {
             throw new GroupManagementException("Error occurred while getting user store manager", e);
         }
@@ -299,8 +323,8 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
             List<String> rolesForGroup = this.getAllRolesForGroup(groupId);
             for (String role : rolesForGroup) {
                 String[] users = userStoreManager.getUserListOfRole("Internal/groups/" + groupId + "/" + role);
-                for (String user : users){
-                    if (!userNames.contains(user)){
+                for (String user : users) {
+                    if (!userNames.contains(user)) {
                         userNames.add(user);
                     }
                 }
@@ -339,7 +363,25 @@ public class GroupManagementServiceProviderImpl implements GroupManagementServic
         } catch (DeviceManagementException e) {
             throw new GroupManagementException("Error occurred while adding device in to group", e);
         }
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean removeDeviceFromGroup(DeviceIdentifier deviceId, int groupId) throws GroupManagementException {
+        Device device;
+        Group group;
+        try {
+            device = DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().getDevice(deviceId);
+            group = this.getGroupById(groupId);
+            if (device == null || group == null) {
+                return false;
+            }
+            device.setGroupId(0);
+            DeviceMgtGroupDataHolder.getInstance().getDeviceManagementService().modifyEnrollment(device);
+        } catch (DeviceManagementException e) {
+            throw new GroupManagementException("Error occurred while removing device from group", e);
+        }
+        return true;
     }
 
     private int getDeviceCountInGroup(int groupId) throws GroupManagementException {
